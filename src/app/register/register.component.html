@@ -1,0 +1,313 @@
+<!-- <div class="register-container">
+    <div class="register-left">
+      <h2>Welcome Aboard</h2>
+      <p>Create your account to get started</p>
+  
+     
+      <p class="divider">Fill in the details below</p>
+  
+      
+      <form (ngSubmit)="onSubscribe()" class="register-form">
+        <div class="input-group">
+          <label for="name">Full Name</label>
+          <input
+            type="text"
+            id="name"
+            [(ngModel)]="name"
+            name="name"
+            placeholder="Enter your full name"
+            required
+          />
+        </div>
+  
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+  
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+  
+        <div class="input-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            placeholder="Confirm your password"
+            required
+          />
+        </div>
+  
+        <p *ngIf="passwordMismatch" class="error-message">{{ passwordMismatch }}</p>
+        <button type="submit" class="register-button">SignUp</button>
+        <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
+        <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+      </form>
+  
+      <p class="login-text">
+        Already have an account? <a routerLink="/login">Log In</a>
+      </p>
+    </div>
+  
+    <div class="register-right">
+      <img
+        src="assets/AlbedoBase_XL_4k_uhd_quality_image_which_is_visually_stunning_3.jpg"
+        alt="Sign Up Illustration"
+        class="rounded-image"
+      />
+    </div>
+  </!<div> -->
+
+
+
+<!-- 
+      <div class="register-container">
+    <div class="register-card">
+      <h2>Sign Up</h2>
+      <form (ngSubmit)="onSubscribe()">
+       
+        <div class="input-group">
+          <label for="name">Full Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            [(ngModel)]="name" 
+            name="name" 
+            placeholder="Enter your full name" 
+            required 
+          />
+        </div>
+  
+      
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            [(ngModel)]="email" 
+            name="email" 
+            placeholder="Enter your email" 
+            required 
+          />
+        </div>
+        
+        
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            [(ngModel)]="password" 
+            name="password" 
+            placeholder="Enter your password" 
+            required 
+          />
+        </div>
+  
+        
+        <div class="input-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input 
+            type="password" 
+            id="confirmPassword" 
+            [(ngModel)]="confirmPassword" 
+            name="confirmPassword" 
+            placeholder="Confirm your password" 
+            required 
+          />
+        </div>
+        
+       
+        <p *ngIf="passwordMismatch" class="error-message">{{ passwordMismatch }}</p>
+       
+  
+        
+        <button type="submit" class="register-button">Subscribe</button>
+
+        <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
+    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+      </form>
+  
+      <p class="login-text">
+        Already have an account? <a routerLink="/login">Log In</a>
+      </p>
+    </div>
+  </div>      -->
+
+
+
+
+
+<!-- 
+  <div class="register-container">
+  <div class="register-left">
+    <h2>Welcome Aboard</h2>
+    <p>Create your account to get started</p>
+
+    <p class="divider">Fill in the details below</p>
+
+    <form (ngSubmit)="onRegister()" class="register-form">
+      <div class="input-group">
+        <label for="name">Full Name</label>
+        <input
+          type="text"
+          id="name"
+          [(ngModel)]="name"
+          name="name"
+          placeholder="Enter your full name"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="Enter your email"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Enter your password"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          placeholder="Confirm your password"
+          required
+        />
+      </div>
+
+      <p *ngIf="passwordMismatch" class="error-message">{{ passwordMismatch }}</p>
+      <button type="submit" class="register-button">Sign Up</button>
+      <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
+      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </form>
+
+    <p class="login-text">
+      Already have an account? <a routerLink="/login">Log In</a>
+    </p>
+  </div>
+
+  <div class="register-right">
+    <img
+      src="assets/AlbedoBase_XL_4k_uhd_quality_image_which_is_visually_stunning_3.jpg"
+      alt="Sign Up Illustration"
+      class="rounded-image"
+    />
+  </div>
+</div> -->
+
+
+
+<div class="register-container">
+  <div class="register-left">
+    <h2>Welcome Aboard</h2>
+    <p>Create your account to get started</p>
+
+    <p class="divider">Fill in the details below</p>
+
+    <form (ngSubmit)="onRegister()" class="register-form">
+      <div class="input-group">
+        <label for="name">Full Name</label>
+        <input
+          type="text"
+          id="name"
+          [(ngModel)]="name"
+          name="name"
+          placeholder="Enter your full name"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="Enter your email"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Enter your password"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          placeholder="Confirm your password"
+          required
+        />
+      </div>
+
+      <p *ngIf="passwordMismatch" class="error-message">{{ passwordMismatch }}</p>
+      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+      
+      <button type="submit" class="register-button">Sign Up</button>
+    </form>
+
+    <p class="login-text">
+      Already have an account? <a routerLink="/login">Log In</a>
+    </p>
+  </div>
+
+  <div class="register-right">
+    <img
+      src="assets/AlbedoBase_XL_4k_uhd_quality_image_which_is_visually_stunning_3.jpg"
+      alt="Sign Up Illustration"
+      class="rounded-image"
+    />
+  </div>
+</div>
