@@ -15,7 +15,9 @@
           "options": {
             "outputPath": "dist/mail-to-excel",
             "index": "src/index.html",
-            "browser": "src/main.ts",
+            "baseHref": "/",
+          
+              "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
