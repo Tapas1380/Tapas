@@ -19,8 +19,8 @@ interface EmailResponse {
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8080/api/auth'; // Update with your backend URL
-  private emailApiUrl = 'http://localhost:8080/api/email';
+  private apiUrl = 'https://excel-bulk-mail-backend.onrender.com/api/auth'; // Update with your backend URL
+  private emailApiUrl = 'https://excel-bulk-mail-backend.onrender.com/api/email';
 
   constructor(private http: HttpClient) { }
 
