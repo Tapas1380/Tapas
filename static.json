@@ -1,0 +1,13 @@
+{
+  "headers": {
+    "/**": {
+      "Cache-Control": "public, max-age=0, must-revalidate"
+    }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
