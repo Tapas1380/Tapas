@@ -40,6 +40,7 @@
     justify-content: center;
     align-items: center;
     padding: 0; /* Remove any padding from the right section */
+    background: transparent;
   }
   
   /* Adjust Image */
@@ -48,7 +49,8 @@
     height: 98vh; /* Make image cover the entire height */
     object-fit: cover; /* Ensures image covers the area and doesn't stretch */
     border-radius: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); */
+     background: none;
   }
   
   /* Headings and Paragraphs */
