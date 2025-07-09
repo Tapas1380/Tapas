@@ -1,702 +1,340 @@
 // app.component.ts
-import { Component,OnInit } from '@angular/core';
+
 import * as XLSX from 'xlsx';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-interface ExcelData {
-  [key: string]: any;
-}
 
 @Component({
   selector: 'app-view',
   templateUrl: './view.component.html',
   styleUrls: ['./view.component.css']
 })
-export class ViewComponent implements OnInit {
-  userProfile: any = {};
-  title = 'excel-column-mapper';
+export class ViewComponent implements OnInit, OnDestroy {
+  title = 'Angular Portfolio';
   
-  // Page state
-  currentPage: 'upload' | 'mapping' | 'result' | 'individual' = 'upload';
-  
-  // File and data
-  selectedFile: File | null = null;
-  excelData: ExcelData[] = [];
-  availableColumns: string[] = [];
-  
-  // Dynamic fields extracted from email template (now mandatory)
-  dynamicFields: string[] = [];
-  
-  // Email field selection
-  includeEmailField: boolean = false;
-  emailFieldKey: string = 'email_field';
+ @ViewChild('navbar', { static: true }) navbar!: ElementRef;
+  @ViewChild('scrollTop', { static: true }) scrollTop!: ElementRef;
+  @ViewChild('navMenu', { static: true }) navMenu!: ElementRef;
 
-  isSendingEmail: boolean = false;
-  emailSentStatus: { [key: number]: 'sending' | 'sent' | 'failed' | null } = {};
+  contactForm: FormGroup;
+  isSubmitting = false;
   
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {
-    // Initialize with default template and extract fields
-    this.extractFieldsFromEmailTemplate();
-  }
-    ngOnInit(): void {
-    this.loadUserProfile();
-  }
+  // Portfolio data
+  skills = [
+    { icon: '☕', name: 'Java & Spring Boot', progress: 92 },
+    { icon: '🅰️', name: 'Angular', progress: 88 },
+    { icon: '📝', name: 'TypeScript', progress: 85 },
+    { icon: '🗄️', name: 'MySQL & MongoDB', progress: 80 },
+    { icon: '🐳', name: 'Docker & Kubernetes', progress: 75 },
+    { icon: '☁️', name: 'AWS & Azure', progress: 70 }
+  ];
 
-  // Method to load user profile
-  loadUserProfile(): void {
-    const token = this.authService.getToken();
-    if (token) {
-      this.authService.getProfile(token).subscribe(
-        (profileData) => {
-          this.userProfile = profileData;  // Update the userProfile with the data received
-        },
-        (error) => {
-          console.error("Error fetching profile:", error);
-          if (error.status === 401) {
-            // If unauthorized, redirect to login
-            this.router.navigate(['/login']);
-          }
-        }
-      );
-    } else {
-      console.warn("No token found, redirecting to login.");
-      this.router.navigate(['/login']);
+  projects = [
+    {
+      title: 'Enterprise E-Commerce Platform',
+      description: 'Full-stack e-commerce solution with microservices architecture, featuring user authentication, payment integration, and admin dashboard.',
+      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=250&fit=crop&auto=format&q=80',
+      technologies: ['Spring Boot', 'Angular', 'MySQL', 'Redis'],
+      github: '#',
+      demo: '#'
+    },
+    {
+      title: 'Project Management System',
+      description: 'Collaborative project management tool with real-time updates, task tracking, and team collaboration features.',
+      image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=250&fit=crop&auto=format&q=80',
+      technologies: ['Spring Boot', 'Angular', 'WebSocket', 'PostgreSQL'],
+      github: '#',
+      demo: '#'
+    },
+    {
+      title: 'Business Analytics Dashboard',
+      description: 'Interactive analytics platform with data visualization, reporting, and business intelligence capabilities.',
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop&auto=format&q=80',
+      technologies: ['Spring Boot', 'Angular', 'Chart.js', 'MongoDB'],
+      github: '#',
+      demo: '#'
+    },
+    {
+      title: 'Digital Banking System',
+      description: 'Secure banking application with transaction management, account handling, and comprehensive security features.',
+      image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=250&fit=crop&auto=format&q=80',
+      technologies: ['Spring Security', 'Angular', 'JWT', 'PostgreSQL'],
+      github: '#',
+      demo: '#'
+    },
+    {
+      title: 'Inventory Management System',
+      description: 'Enterprise inventory solution with stock tracking, supplier management, and automated reorder functionality.',
+      image: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=400&h=250&fit=crop&auto=format&q=80',
+      technologies: ['Spring Boot', 'Angular', 'MySQL', 'Docker'],
+      github: '#',
+      demo: '#'
+    },
+    {
+      title: 'Learning Management System',
+      description: 'Educational platform with course management, student tracking, and interactive learning modules.',
+      image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop&auto=format&q=80',
+      technologies: ['Spring Boot', 'Angular', 'MongoDB', 'AWS S3'],
+      github: '#',
+      demo: '#'
     }
+  ];
+
+  stats = [
+    { value: '15+', label: 'Projects Completed' },
+    { value: '3+', label: 'Years Experience' },
+    { value: '50+', label: 'Happy Clients' }
+  ];
+
+  contactInfo = {
+    email: 'tapasranjanhr@gmail.com',
+    phone: '+91 8290684273',
+    location: 'Bhubaneswar, Odisha, India'
+  };
+
+  socialLinks = [
+    { icon: 'fab fa-linkedin', url: 'https://www.linkedin.com/in/tapas-ranjan-sahoo-0365ba178/' },
+    { icon: 'fab fa-github', url: 'https://github.com/dashboard' },
+    { icon: 'fab fa-facebook', url: '#' },
+    { icon: 'fab fa-instagram', url: 'https://www.instagram.com/mr__tps/' }
+  ];
+
+  private scrollListener!: () => void;
+  private observer!: IntersectionObserver;
+ 
+  constructor( private fb: FormBuilder,
+    private authService: AuthService, 
+    private router: Router) {
+    this.contactForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      subject: ['', [Validators.required, Validators.minLength(5)]],
+      message: ['', [Validators.required, Validators.minLength(10)]]
+    });
   }
+
+downloadResume(): void {
+    // Option 1: Direct link to resume file in assets folder
+    const resumeUrl = 'assets/TAPAS_RESUME.pdf';
+    const link = document.createElement('a');
+    link.href = resumeUrl;
+    link.download = 'Tapas-Ranjan-Resume.pdf';
+    link.click();
+  }
+
+  ngOnInit(): void {
+    this.initializeScrollEffects();
+    this.initializeIntersectionObserver();
+    // this.initializeSkillAnimation();
+    this.animateSkillBars();
   
-  // Selected columns for mapping
-  selectedColumns: { [key: string]: string } = {};
-  
-  // Final mapped data
-  mappedData: any[] = [];
-  
-  // Individual data viewing
-  currentDataIndex: number = 0;
-  
-  // Clickable columns functionality
-  clickableSelectedColumns: string[] = [];
-  
-  // Email template with default value
-  emailTemplate: string = `Subject - Let's Build Your Website & App – Take Your Domain to the Next Level with Qwegle!
-Dear [Name],
+  }
 
-I hope this message finds you well.
-
-We noticed that you already have a registered domain — that's a great first step towards establishing a strong digital presence. At Qwegle Technology, we specialize in transforming domains into powerful and engaging websites and mobile applications tailored to your business needs.
-
-Our experienced team offers:
-
-Custom Website Development – Modern, responsive, and SEO-friendly designs.
-
-Mobile Application Development – Android, iOS, or cross-platform solutions.
-
-End-to-End Tech Support – From concept to launch and beyond.
-
-Whether you're starting fresh or looking to revamp, we're here to turn your vision into a functional and visually impressive digital platform.
-
-We'd love to discuss how Qwegle can help bring your domain to life. Please feel free to reply to this email or reach us directly at +91-88956 62216.
-
-Looking forward to helping you build something exceptional!
-
-
-
-Best regards,
-Priyanka
-Business Development Executive
-Qwegle Technologies Pvt. Ltd.
-📍3833, Nirupamalaya, Plot no. 516/1753, KIIT Rd, Patia, Bhubaneswar, Odisha 751024
-📞 +91-88956 62216
-🌐 www.qwegle.com | ✉️ info@qwegle.co`;
-
-  // Default template for reset functionality
-  private defaultEmailTemplate = this.emailTemplate;
-
-  // Extract fields from square brackets in email template
-  extractFieldsFromEmailTemplate() {
-    const regex = /\[([^\]]+)\]/g;
-    const matches: string[] = [];
-    let match: RegExpExecArray | null;
-    
-    while ((match = regex.exec(this.emailTemplate)) !== null) {
-      const fieldName = match[1].trim();
-      if (fieldName && !matches.includes(fieldName)) {
-        matches.push(fieldName);
-      }
+  ngOnDestroy(): void {
+    if (this.scrollListener) {
+      window.removeEventListener('scroll', this.scrollListener);
     }
-    
-    this.dynamicFields = matches;
-  }
-
-  // Convert field name to a consistent key format
-  convertToFieldKey(fieldName: string): string {
-    return fieldName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-  }
-
-  // Get display name from field key
-  getFieldDisplayName(fieldKey: string): string {
-    // Handle special email field
-    if (fieldKey === this.emailFieldKey) {
-      return 'Email';
-    }
-    
-    // Find the original field name from dynamicFields
-    const originalField = this.dynamicFields.find(field => 
-      this.convertToFieldKey(field) === fieldKey
-    );
-    return originalField || fieldKey;
-  }
-
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      this.readExcelFile(file);
+    if (this.observer) {
+      this.observer.disconnect();
     }
   }
 
-  readExcelFile(file: File) {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      
-      // Get first worksheet
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-      
-      // Convert to JSON
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      
-      if (jsonData.length > 0) {
-        // First row contains headers
-        this.availableColumns = jsonData[0] as string[];
-        
-        // Convert data to objects
-        const headers = jsonData[0] as string[];
-        this.excelData = (jsonData.slice(1) as any[][]).map(row => {
-          const obj: ExcelData = {};
-          headers.forEach((header, index) => {
-            obj[header] = row[index] || '';
-          });
-          return obj;
-        });
-      }
+  private initializeScrollEffects(): void {
+    this.scrollListener = () => {
+      this.handleNavbarScroll();
+      this.handleScrollToTopButton();
     };
-    reader.readAsArrayBuffer(file);
+    window.addEventListener('scroll', this.scrollListener);
   }
+// Remove the animateSkillBars() method completely and replace it with this:
 
-  // Handle clicking on available columns
-  onColumnClick(columnName: string) {
-    const index = this.clickableSelectedColumns.indexOf(columnName);
-    if (index > -1) {
-      // Remove if already selected
-      this.clickableSelectedColumns.splice(index, 1);
-    } else {
-      // Add if not selected
-      this.clickableSelectedColumns.push(columnName);
-    }
-  }
+// Replace your current animation method with this:
 
-  // Check if column is selected for clickable functionality
-  isColumnSelected(columnName: string): boolean {
-    return this.clickableSelectedColumns.includes(columnName);
-  }
+private initializeSkillAnimation(): void {
+  // Create an IntersectionObserver for the skills section
+  const skillsSection = document.getElementById('skills');
+  const skillBars = document.querySelectorAll('.skill-progress');
 
-  // Get filtered columns based on clickable selections
-  getFilteredColumnsForMapping(): string[] {
-    return this.clickableSelectedColumns.length > 0 ? this.clickableSelectedColumns : this.availableColumns;
-  }
+  if (!skillsSection) return;
 
-  // Get dynamic field keys - all fields are now mandatory, plus optional email field
-  getDynamicFieldKeys(): string[] {
-    const fieldKeys = this.dynamicFields.map(field => this.convertToFieldKey(field));
-    
-    // Add email field if selected
-    if (this.includeEmailField) {
-      fieldKeys.push(this.emailFieldKey);
-    }
-    
-    return fieldKeys;
-  }
-
-  // Check if a field is mandatory (square bracket fields are mandatory, email field is optional)
-  isFieldMandatory(fieldKey: string): boolean {
-    return fieldKey !== this.emailFieldKey;
-  }
-
-  // Handle email field checkbox change
-  onEmailFieldToggle(event: Event) {
-    const target = event.target as HTMLInputElement;
-    this.includeEmailField = target.checked;
-    
-    // Clear email field mapping if unchecked
-    if (!target.checked && this.selectedColumns[this.emailFieldKey]) {
-      delete this.selectedColumns[this.emailFieldKey];
-    }
-  }
-
-  goToMapping() {
-    if (!this.selectedFile || this.availableColumns.length === 0) {
-      alert('Please select a valid Excel file first');
-      return;
-    }
-    
-    if (this.dynamicFields.length === 0) {
-      alert('Please add dynamic fields to your email template using square brackets like [Name], [Email]');
-      return;
-    }
-    
-    this.currentPage = 'mapping';
-  }
-
-  onColumnMap(targetField: string, sourceColumn: string) {
-    this.selectedColumns[targetField] = sourceColumn;
-  }
-
-  processData() {
-    // Only check mandatory fields (square bracket fields)
-    const dynamicFieldKeys = this.dynamicFields.map(field => this.convertToFieldKey(field));
-    const unmappedMandatoryFields = dynamicFieldKeys.filter(field => !this.selectedColumns[field]);
-    
-    if (unmappedMandatoryFields.length > 0) {
-      const displayNames = unmappedMandatoryFields.map(field => this.getFieldDisplayName(field));
-      alert(`Please map all required fields: ${displayNames.join(', ')}`);
-      return;
-    }
-    
-    // Check if email field is selected but not mapped
-    if (this.includeEmailField && !this.selectedColumns[this.emailFieldKey]) {
-      alert('Please map the Email field or uncheck it if not needed');
-      return;
-    }
-    
-    // Map the data
-    this.mappedData = this.excelData.map(row => {
-      const mappedRow: any = {};
-      
-      // Map square bracket fields
-      dynamicFieldKeys.forEach(field => {
-        const sourceColumn = this.selectedColumns[field];
-        mappedRow[field] = row[sourceColumn] || '';
-      });
-      
-      // Map email field if selected
-      if (this.includeEmailField) {
-        const sourceColumn = this.selectedColumns[this.emailFieldKey];
-        mappedRow[this.emailFieldKey] = row[sourceColumn] || '';
-      }
-      
-      return mappedRow;
-    });
-    
-    this.currentPage = 'result';
-  }
-
-  goBack() {
-    if (this.currentPage === 'mapping') {
-      this.currentPage = 'upload';
-    } else if (this.currentPage === 'result') {
-      this.currentPage = 'mapping';
-    } else if (this.currentPage === 'individual') {
-      this.currentPage = 'result';
-    }
-  }
-
-  // reset() {
-  //   this.currentPage = 'upload';
-  //   this.selectedFile = null;
-  //   this.excelData = [];
-  //   this.availableColumns = [];
-  //   this.clickableSelectedColumns = [];
-  //   this.selectedColumns = {};
-  //   this.mappedData = [];
-  //   this.currentDataIndex = 0;
-  //   this.includeEmailField = false;
-  //   this.resetEmailTemplate();
-  //   // Re-extract fields after reset
-  //   this.extractFieldsFromEmailTemplate();
-  // }
-
-  // Email template methods with field extraction
-  updateEmailTemplate(newTemplate: string) {
-    this.emailTemplate = newTemplate;
-    // Re-extract fields whenever template changes
-    this.extractFieldsFromEmailTemplate();
-  }
-
-  resetEmailTemplate() {
-    this.emailTemplate = this.defaultEmailTemplate;
-    this.extractFieldsFromEmailTemplate();
-  }
-
-  // Individual data navigation methods
-  goToIndividualView() {
-    if (this.mappedData.length === 0) {
-      alert('No data to display');
-      return;
-    }
-    this.currentDataIndex = 0;
-    this.currentPage = 'individual';
-  }
-
-  nextRecord() {
-    if (this.currentDataIndex < this.mappedData.length - 1) {
-      this.currentDataIndex++;
-    }
-  }
-
-  previousRecord() {
-    if (this.currentDataIndex > 0) {
-      this.currentDataIndex--;
-    }
-  }
-
-  getCurrentRecord() {
-    return this.mappedData[this.currentDataIndex] || {};
-  }
-
-  // Get personalized email with dynamic field replacement
-  getPersonalizedEmail(): string {
-    const currentRecord = this.getCurrentRecord();
-    let emailContent = this.emailTemplate;
-    
-    // Replace all dynamic fields in square brackets
-    this.dynamicFields.forEach(fieldName => {
-      const fieldKey = this.convertToFieldKey(fieldName);
-      const fieldValue = currentRecord[fieldKey] || fieldName; // Use original field name as fallback
-      const regex = new RegExp(`\\[${fieldName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]`, 'g');
-      emailContent = emailContent.replace(regex, fieldValue);
-    });
-    
-    return emailContent;
-  }
-
-  copyEmailContent() {
-    const personalizedEmail = this.getPersonalizedEmail();
-    this.copyToClipboard(personalizedEmail, 'Email Content');
-  }
-
-  async copyToClipboard(text: string, fieldName: string) {
-    try {
-      await navigator.clipboard.writeText(text);
-      this.showCopySuccess(fieldName);
-    } catch (err) {
-      // Fallback for older browsers
-      this.fallbackCopyTextToClipboard(text, fieldName);
-    }
-  }
-
-  private fallbackCopyTextToClipboard(text: string, fieldName: string) {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.top = '0';
-    textArea.style.left = '0';
-    textArea.style.position = 'fixed';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    
-    try {
-      document.execCommand('copy');
-      this.showCopySuccess(fieldName);
-    } catch (err) {
-      console.error('Fallback: Oops, unable to copy', err);
-      alert('Unable to copy to clipboard');
-    }
-    
-    document.body.removeChild(textArea);
-  }
-
-  private showCopySuccess(fieldName: string) {
-    const successMsg = document.createElement('div');
-    successMsg.textContent = `${fieldName} copied to clipboard!`;
-    successMsg.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #28a745;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 4px;
-      z-index: 1000;
-      font-size: 14px;
-    `;
-    document.body.appendChild(successMsg);
-    
-    setTimeout(() => {
-      document.body.removeChild(successMsg);
-    }, 2000);
-  }
-
-  exportToExcel() {
-    if (this.mappedData.length === 0) return;
-    
-    const ws = XLSX.utils.json_to_sheet(this.mappedData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Processed Data');
-    XLSX.writeFile(wb, 'processed_data.xlsx');
-  }
-
-  // private isValidEmail(email: string): boolean {
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   return emailRegex.test(email);
-  // }
-
-  // private isValidPhone(phone: string): boolean {
-  //   const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-  //   return phoneRegex.test(phone.replace(/\s/g, ''));
-  // }
-
-  logout(): void {
-    // Call the logout function from AuthService
-    this.authService.logout();
-    
-    // Optional: Add any additional cleanup here
-    
-    // Redirect to login page (or home if preferred)
-    this.router.navigate(['/login']); 
-    
-    // Optional: Show confirmation message
-    console.log('Logged out successfully');
-  }
-
-
-
-  // Send email for current record
-  async sendEmailForCurrentRecord(): Promise<void> {
-    const currentRecord = this.getCurrentRecord();
-    const emailField = this.includeEmailField ? currentRecord[this.emailFieldKey] : null;
-    
-    if (!emailField) {
-      alert('No email address found for this record. Please ensure email field is mapped and contains valid email addresses.');
-      return;
-    }
-
-    if (!this.isValidEmail(emailField)) {
-      alert('Invalid email address: ' + emailField);
-      return;
-    }
-
-    const confirmed = confirm(`Send email to: ${emailField}?`);
-    if (!confirmed) return;
-
-    this.isSendingEmail = true;
-    this.emailSentStatus[this.currentDataIndex] = 'sending';
-
-    try {
-      const personalizedEmail = this.getPersonalizedEmail();
-      const subject = this.authService.extractEmailSubject(personalizedEmail);
-      const body = this.authService.formatEmailBody(personalizedEmail);
-
-      const emailRequest = {
-        toEmail: emailField,
-        subject: subject,
-        body: body,
-        isHtml: false
-      };
-
-      await this.authService.sendEmail(emailRequest).toPromise();
-      
-      this.emailSentStatus[this.currentDataIndex] = 'sent';
-      this.showEmailSuccess(`Email sent successfully to ${emailField}`);
-
-    } catch (error) {
-      console.error('Error sending email:', error);
-      this.emailSentStatus[this.currentDataIndex] = 'failed';
-      this.showEmailError('Failed to send email: ' + (error as any)?.message || 'Unknown error');
-    } finally {
-      this.isSendingEmail = false;
-    }
-  }
-
-  // Send emails to all records (bulk email)
-  async sendBulkEmails(): Promise<void> {
-    if (!this.includeEmailField) {
-      alert('Email field is not mapped. Please go back and include email field mapping.');
-      return;
-    }
-
-    const emailRequests = [];
-    const validRecords = [];
-
-    // Prepare email requests for all records
-    for (let i = 0; i < this.mappedData.length; i++) {
-      const record = this.mappedData[i];
-      const emailField = record[this.emailFieldKey];
-
-      if (emailField && this.isValidEmail(emailField)) {
-        // Create personalized email for this record
-        const personalizedEmail = this.getPersonalizedEmailForRecord(record);
-        const subject = this.authService.extractEmailSubject(personalizedEmail);
-        const body = this.authService.formatEmailBody(personalizedEmail);
-
-        emailRequests.push({
-          toEmail: emailField,
-          subject: subject,
-          body: body,
-          isHtml: false
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // When skills section is visible
+        skillBars.forEach((bar, index) => {
+          const element = bar as HTMLElement;
+          const targetWidth = element.getAttribute('data-width');
+          
+          // Reset to 0% and then animate to target width
+          element.style.transition = 'none';
+          element.style.width = '0%';
+          
+          // Force reflow
+          void element.offsetWidth;
+          
+          // Set transition and animate
+          element.style.transition = `width 1.5s ease-out ${index * 0.1}s`;
+          element.style.width = `${targetWidth}%`;
         });
-        validRecords.push(i);
+        
+        // Stop observing after animation starts
+        observer.unobserve(entry.target);
       }
-    }
-
-    if (emailRequests.length === 0) {
-      alert('No valid email addresses found in the data.');
-      return;
-    }
-
-    const confirmed = confirm(`Send emails to ${emailRequests.length} recipients?`);
-    if (!confirmed) return;
-
-    this.isSendingEmail = true;
-
-    // Set all valid records to sending status
-    validRecords.forEach(index => {
-      this.emailSentStatus[index] = 'sending';
     });
+  }, { threshold: 0.1 });
 
-    try {
-      const response = await this.authService.sendBulkEmails(emailRequests).toPromise();
-      
-      // Set all to sent status
-      validRecords.forEach(index => {
-        this.emailSentStatus[index] = 'sent';
-      });
-
-      this.showEmailSuccess(`Bulk email completed: ${response}`);
-
-    } catch (error) {
-      console.error('Error sending bulk emails:', error);
-      
-      // Set all to failed status
-      validRecords.forEach(index => {
-        this.emailSentStatus[index] = 'failed';
-      });
-
-      this.showEmailError('Failed to send bulk emails: ' + (error as any)?.message || 'Unknown error');
-    } finally {
-      this.isSendingEmail = false;
+  observer.observe(skillsSection);
+}
+  private handleNavbarScroll(): void {
+    const navbar = this.navbar.nativeElement;
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
     }
   }
 
-  // Get personalized email for specific record
-  getPersonalizedEmailForRecord(record: any): string {
-    let emailContent = this.emailTemplate;
+  private handleScrollToTopButton(): void {
+    const scrollTopBtn = this.scrollTop.nativeElement;
+    if (window.scrollY > 300) {
+      scrollTopBtn.classList.add('show');
+    } else {
+      scrollTopBtn.classList.remove('show');
+    }
+  }
+
+  private initializeIntersectionObserver(): void {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const element = entry.target as HTMLElement;
+          element.style.opacity = '1';
+          element.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements after view initialization
+    setTimeout(() => {
+      document.querySelectorAll('.skill-card, .project-card, .contact-item').forEach(el => {
+        const element = el as HTMLElement;
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(20px)';
+        element.style.transition = 'all 0.6s ease';
+        this.observer.observe(element);
+      });
+    }, 100);
+  }
+
+  private animateSkillBars(): void {
+    const animateSkills = () => {
+      const skillBars = document.querySelectorAll('.skill-progress');
+      skillBars.forEach(bar => {
+        const barTop = bar.getBoundingClientRect().top;
+        const barBottom = bar.getBoundingClientRect().bottom;
+        const isVisible = barTop < window.innerHeight && barBottom > 0;
+        
+        if (isVisible) {
+          const element = bar as HTMLElement;
+          const width = element.style.width;
+          element.style.width = '0%';
+          setTimeout(() => {
+            element.style.width = width;
+          }, 200);
+        }
+      });
+    };
+
+    window.addEventListener('scroll', animateSkills);
+  }
+
+  toggleMobileMenu(): void {
+    const navMenu = this.navMenu.nativeElement;
+    navMenu.classList.toggle('active');
+  }
+
+  scrollToSection(sectionId: string): void {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    // Close mobile menu if open
+    const navMenu = this.navMenu.nativeElement;
+    navMenu.classList.remove('active');
+  }
+
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+   onSubmit(): void {
+  if (this.contactForm.valid) {
+    this.isSubmitting = true;
+    const formData = this.contactForm.value;
+    console.log('Form submitted:', formData);
     
-    // Replace all dynamic fields in square brackets
-    this.dynamicFields.forEach(fieldName => {
-      const fieldKey = this.convertToFieldKey(fieldName);
-      const fieldValue = record[fieldKey] || fieldName; // Use original field name as fallback
-      const regex = new RegExp(`\\[${fieldName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]`, 'g');
-      emailContent = emailContent.replace(regex, fieldValue);
+    // Use the improved method with error handling
+    this.authService.sendMessageWithErrorHandling(formData).subscribe({
+      next: (response) => {
+        console.log('Success:', response);
+        this.showSuccessMessage();
+        this.contactForm.reset();
+        this.isSubmitting = false;
+      },
+      error: (error) => {
+        console.error('Error:', error);
+        this.showErrorMessage(error.message);
+        this.isSubmitting = false;
+      }
     });
-    
-    return emailContent;
+  } else {
+    this.markFormGroupTouched();
+  }
+}
+
+  private showSuccessMessage(): void {
+    alert('Thank you for your message! I will get back to you soon.');
   }
 
-  // Get email status for current record
-  getCurrentEmailStatus(): 'sending' | 'sent' | 'failed' | null {
-    return this.emailSentStatus[this.currentDataIndex] || null;
+  private showErrorMessage(message?: string): void {
+    const errorMsg = message || 'Sorry, there was an error sending your message. Please try again.';
+    alert(errorMsg);
   }
-
-  // Check if current record has email
-  currentRecordHasEmail(): boolean {
-    if (!this.includeEmailField) return false;
-    const currentRecord = this.getCurrentRecord();
-    const emailField = currentRecord[this.emailFieldKey];
-    return emailField && this.isValidEmail(emailField);
-  }
-
-  // Get current record's email
-  getCurrentRecordEmail(): string {
-    if (!this.includeEmailField) return '';
-    const currentRecord = this.getCurrentRecord();
-    return currentRecord[this.emailFieldKey] || '';
-  }
-
-  // Show email success message
-  private showEmailSuccess(message: string) {
-    const successMsg = document.createElement('div');
-    successMsg.textContent = message;
-    successMsg.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #28a745;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      z-index: 1000;
-      font-size: 14px;
-      max-width: 300px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    `;
-    document.body.appendChild(successMsg);
-    
-    setTimeout(() => {
-      if (document.body.contains(successMsg)) {
-        document.body.removeChild(successMsg);
+  private markFormGroupTouched(): void {
+    Object.keys(this.contactForm.controls).forEach(key => {
+      const control = this.contactForm.get(key);
+      if (control) {
+        control.markAsTouched();
       }
-    }, 4000);
+    });
   }
 
-  // Show email error message
-  private showEmailError(message: string) {
-    const errorMsg = document.createElement('div');
-    errorMsg.textContent = message;
-    errorMsg.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #dc3545;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      z-index: 1000;
-      font-size: 14px;
-      max-width: 300px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    `;
-    document.body.appendChild(errorMsg);
-    
-    setTimeout(() => {
-      if (document.body.contains(errorMsg)) {
-        document.body.removeChild(errorMsg);
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.contactForm.get(fieldName);
+    return field ? field.invalid && (field.dirty || field.touched) : false;
+  }
+
+  getFieldError(fieldName: string): string {
+    const field = this.contactForm.get(fieldName);
+    if (field?.errors) {
+      if (field.errors['required']) {
+        return `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} is required`;
       }
-    }, 5000);
-  }
-
-  // Enhanced validation methods
-  private isValidEmail(email: string): boolean {
-    if (!email || typeof email !== 'string') return false;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
-  }
-
-  private isValidPhone(phone: string): boolean {
-    if (!phone || typeof phone !== 'string') return false;
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
-  }
-
-  // Reset email status when starting over
-  reset() {
-    this.currentPage = 'upload';
-    this.selectedFile = null;
-    this.excelData = [];
-    this.availableColumns = [];
-    this.clickableSelectedColumns = [];
-    this.selectedColumns = {};
-    this.mappedData = [];
-    this.currentDataIndex = 0;
-    this.includeEmailField = false;
-    this.isSendingEmail = false;
-    this.emailSentStatus = {}; // Reset email status
-    this.resetEmailTemplate();
-    this.extractFieldsFromEmailTemplate();
+      if (field.errors['email']) {
+        return 'Please enter a valid email address';
+      }
+      if (field.errors['minlength']) {
+        return `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} must be at least ${field.errors['minlength'].requiredLength} characters`;
+      }
+    }
+    return '';
   }
 }

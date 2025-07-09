@@ -1,468 +1,258 @@
-<!-- app.component.html -->
-<div class="container">
-  <h1></h1>
+<!-- Navigation -->
+<nav class="navbar" id="navbar" #navbar>
+  <div class="nav-container">
+    <div class="nav-logo">
+      <h2>Tapas</h2>
+    </div>
+    
+    <ul class="nav-menu" id="nav-menu" #navMenu>
+      <li class="nav-item">
+        <a class="nav-link" (click)="scrollToSection('home')">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="scrollToSection('about')">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="scrollToSection('skills')">Skills</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="scrollToSection('projects')">Projects</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="scrollToSection('contact')">Contact</a>
+      </li>
+    </ul>
+    
+    <div class="nav-toggle" (click)="toggleMobileMenu()">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+  </div>
+</nav>
 
-  <div class="logout-section">
-    <button class="btn btn-logout text-only" (click)="logout()">
-      Logout
-    </button>
-  </div>
-  
-  <!-- Page 1: File Upload and Column Selection -->
-  <div *ngIf="currentPage === 'upload'" class="page-content">
-    <!-- Email Template Editor -->
-    <div class="email-template-section">
-      <h3>Edit or Write Your Email:</h3>
-    
-      <textarea 
-        class="email-template-editor"
-        [(ngModel)]="emailTemplate"
-        (ngModelChange)="updateEmailTemplate($event)"
-        rows="15"
-        placeholder="Write your email template here. Use [FieldName] for dynamic content..."></textarea>
-    </div>
-    
-    <h2>Select an Excel File</h2>
-    
-    <!-- File Selection -->
-    <div class="file-section">
-      <label for="fileInput" class="file-label">Choose Excel File:</label>
-      <input 
-        type="file" 
-        id="fileInput"
-        accept=".xlsx,.xls" 
-        (change)="onFileSelected($event)"
-        class="file-input">
-      <div *ngIf="selectedFile" class="file-info">
-        Selected: {{ selectedFile.name }}
-      </div>
-    </div>
-    
-    <!-- Column Selection -->
-    <div class="columns-section" *ngIf="availableColumns.length > 0">
-      <h3>Available Columns in Excel (Click to Select):</h3>
-      <div class="available-columns">
-        <span 
-          *ngFor="let col of availableColumns" 
-          class="column-tag"
-          [class.selected]="isColumnSelected(col)"
-          (click)="onColumnClick(col)"
-          style="cursor: pointer; margin: 4px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; display: inline-block; background-color: #f8f9fa; transition: all 0.2s;"
-          [style.background-color]="isColumnSelected(col) ? '#007bff' : '#f8f9fa'"
-          [style.color]="isColumnSelected(col) ? 'white' : 'black'"
-          title="Click to select/deselect this column">
-          {{ col }}
-        </span>
-      </div>
-      
-      <div *ngIf="clickableSelectedColumns.length > 0" class="selected-columns-info">
-        <h4>Selected Columns ({{ clickableSelectedColumns.length }}):</h4>
-        <div class="selected-columns-list">
-          <span *ngFor="let col of clickableSelectedColumns" class="selected-column-item">
-            {{ col }}
-          </span>
-        </div>
-      </div>
-      
-      <!-- Dynamic Fields Section - Now without checkboxes for square bracket fields -->
-      <div class="dynamic-fields-section">
-        <h3>Required Fields for Email Template:</h3>
-        <div *ngIf="dynamicFields.length === 0" class="no-fields-message">
-          <p>No dynamic fields found in your email template.</p>
-          <p>Add fields using square brackets like [Name], [Email], [Company] in your email template above.</p>
-        </div>
-        
-        <div *ngIf="dynamicFields.length > 0" class="fields-info">
-          <p>Found {{ dynamicFields.length }} required field(s) in your email template:</p>
-          <div class="found-fields">
-            <span *ngFor="let field of dynamicFields" class="found-field-tag">
-              [{{ field }}]
-            </span>
-          </div>
-          <p class="mandatory-note">All these fields are mandatory and will be mapped in the next step.</p>
-        </div>
-        
-        <!-- Additional Email Field with Checkbox -->
-        <div class="additional-fields-section">
-          <h4>Additional Optional Fields:</h4>
-          <div class="additional-field-item">
-            <label class="checkbox-label">
-              <input 
-                type="checkbox" 
-                [(ngModel)]="includeEmailField"
-                (change)="onEmailFieldToggle($event)">
-              Include Email Field for Data Collection
-            </label>
-            <span class="field-description">
-              (Check this if you want to map and collect email addresses separately)
-            </span>
-          </div>
-          
-          <div *ngIf="includeEmailField" class="selected-additional-field">
-            <span class="found-field-tag email-field-tag">
-              Email
-            </span>
-            <span class="optional-indicator">(Optional)</span>
-          </div>
-        </div>
-      </div>
-      
-      <button 
-        class="btn btn-primary" 
-        (click)="goToMapping()"
-        [disabled]="dynamicFields.length === 0">
-        Next
-      </button>
+<!-- Home Section -->
+<section id="home" class="hero">
+  <div class="hero-content">
+    <p class="hero-greeting">Hello, I'm</p>
+    <h1 class="hero-title">
+      <span class="highlight">Tapas Ranjan</span>
+    </h1>
+    <h2 class="hero-subtitle">Java Full Stack Developer</h2>
+    <p class="hero-description">
+      I build scalable web applications with Spring Boot, Angular, and modern technologies.
+      Passionate about creating efficient, maintainable code and exceptional user experiences.
+    </p>
+    <div class="hero-buttons">
+      <a (click)="scrollToSection('projects')" class="btn btn-primary">
+        <i class="fas fa-code"></i> View My Work
+      </a>
+      <a (click)="downloadResume()" class="btn btn-secondary">
+        <i class="fas fa-download"></i> Download Resume
+      </a>
     </div>
   </div>
-  
-  <!-- Page 2: Column Mapping -->
-  <div *ngIf="currentPage === 'mapping'" class="page-content">
-    <h2>Map Columns</h2>
-    <p>Map your required fields to the columns in your Excel file:</p>
-    
-    <div *ngIf="clickableSelectedColumns.length > 0" class="info-message">
-      <p><strong>Note:</strong> Only showing columns you selected ({{ clickableSelectedColumns.length }} columns).</p>
-    </div>
-    
-    <div class="mapping-section">
-      <div *ngFor="let fieldKey of getDynamicFieldKeys()" class="mapping-item">
-        <label class="mapping-label">
-          {{ getFieldDisplayName(fieldKey) }} 
-          <span *ngIf="isFieldMandatory(fieldKey)" class="required-asterisk">*</span>
-          <span *ngIf="!isFieldMandatory(fieldKey)" class="optional-indicator">(Optional)</span>:
-        </label>
-        <select 
-          class="mapping-select"
-          [value]="selectedColumns[fieldKey] || ''"
-          (change)="onColumnMap(fieldKey, $any($event.target).value)">
-          <option value="">-- Select Column --</option>
-          <option *ngFor="let col of getFilteredColumnsForMapping()" [value]="col">{{ col }}</option>
-        </select>
-      </div>
-    </div>
-    
-    <div class="button-group">
-      <button class="btn btn-secondary" (click)="goBack()">Back</button>
-      <button class="btn btn-primary" (click)="processData()">Process Data</button>
+  <div class="hero-image">
+    <div class="avatar">
+      <img src="assets/Tapas-ranjan-sahoo-1-1-full-rounded.png" alt="Profile Picture">
     </div>
   </div>
-  
-  <!-- Page 3: Results -->
-  <div *ngIf="currentPage === 'result'" class="page-content">
-    <h2>Imported Data</h2>
-    <p>Successfully imported {{ mappedData.length }} records:</p>
-    
-    <div class="data-table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th *ngFor="let fieldKey of getDynamicFieldKeys()">{{ getFieldDisplayName(fieldKey) }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let row of mappedData; let i = index">
-            <td *ngFor="let fieldKey of getDynamicFieldKeys()">{{ row[fieldKey] }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-    <div class="button-group">
-      <button class="btn btn-secondary" (click)="goBack()">Back to Mapping</button>
-      <button class="btn btn-primary" (click)="goToIndividualView()">View Individual Records</button>
-      <button class="btn btn-success" (click)="reset()">Start Over</button>
-    </div>
-  </div>
-  
-  <!-- Page 4: Individual Record View -->
+</section>
 
-  <!-- <div *ngIf="currentPage === 'individual'" class="page-content">
-    <h2>Individual Record View</h2>
-    <div class="record-navigation">
-      <span class="record-counter">
-        Record {{ currentDataIndex + 1 }} of {{ mappedData.length }}
-      </span>
-    </div>
-    
-    <div class="individual-record">
-      <div *ngFor="let fieldKey of getDynamicFieldKeys()" class="record-field">
-        <div class="field-header">
-          <label class="field-label">{{ getFieldDisplayName(fieldKey) }}:</label>
-          <button 
-            *ngIf="getCurrentRecord()[fieldKey]" 
-            class="btn btn-copy"
-            (click)="copyToClipboard(getCurrentRecord()[fieldKey], getFieldDisplayName(fieldKey))"
-            title="Copy {{ getFieldDisplayName(fieldKey) }}">
-            📋 Copy
-          </button>
-        </div>
-        <div class="field-value">
-          {{ getCurrentRecord()[fieldKey] || 'N/A' }}
-        </div>
-      </div>
-      
-      
-      <div class="email-content-section">
-        <div class="field-header">
-          <label class="field-label">Personalized Email Content:</label>
-          <button 
-            class="btn btn-copy btn-copy-email"
-            (click)="copyEmailContent()"
-            title="Copy personalized email content">
-            📧 Copy Email
-          </button>
-        </div>
-        <div class="email-content">
-          <pre>{{ getPersonalizedEmail() }}</pre>
-        </div>
-      </div>
-    </div>
-    
-    <div class="navigation-controls">
-      <button 
-        class="btn btn-secondary" 
-        (click)="previousRecord()"
-        [disabled]="currentDataIndex === 0">
-        ← Previous
-      </button>
-      
-      <span class="page-indicator">
-        {{ currentDataIndex + 1 }} / {{ mappedData.length }}
-      </span>
-      
-      <button 
-        class="btn btn-secondary" 
-        (click)="nextRecord()"
-        [disabled]="currentDataIndex >= mappedData.length - 1">
-        Next →
-      </button>
-    </div>
-    
-    <div class="button-group">
-      <button class="btn btn-secondary" (click)="goBack()">Back to Table View</button>
-      <button class="btn btn-primary" (click)="reset()">Start Over</button>
-    </div>
-  </div>
-</div> -->
-
-<div *ngIf="currentPage === 'individual'" class="page-content">
-  <h2>Individual Record View</h2>
-  <div class="record-navigation">
-    <span class="record-counter">
-      Record {{ currentDataIndex + 1 }} of {{ mappedData.length }}
-    </span>
-    
-    <!-- Email Status Indicator -->
-    <div class="email-status" *ngIf="getCurrentEmailStatus()">
-      <span *ngIf="getCurrentEmailStatus() === 'sending'" class="status-sending">
-        📧 Sending...
-      </span>
-      <span *ngIf="getCurrentEmailStatus() === 'sent'" class="status-sent">
-        ✅ Email Sent
-      </span>
-      <span *ngIf="getCurrentEmailStatus() === 'failed'" class="status-failed">
-        ❌ Email Failed
-      </span>
-    </div>
-  </div>
-  
-  <div class="individual-record">
-    <div *ngFor="let fieldKey of getDynamicFieldKeys()" class="record-field">
-      <div class="field-header">
-        <label class="field-label">{{ getFieldDisplayName(fieldKey) }}:</label>
-        <button 
-          *ngIf="getCurrentRecord()[fieldKey]" 
-          class="btn btn-copy"
-          (click)="copyToClipboard(getCurrentRecord()[fieldKey], getFieldDisplayName(fieldKey))"
-          title="Copy {{ getFieldDisplayName(fieldKey) }}">
-          📋 Copy
-        </button>
-      </div>
-      <div class="field-value">
-        {{ getCurrentRecord()[fieldKey] || 'N/A' }}
-      </div>
-    </div>
-    
-    <!-- Email Content Section -->
-    <div class="email-content-section">
-      <div class="field-header">
-        <label class="field-label">Personalized Email Content:</label>
-        <button 
-          class="btn btn-copy btn-copy-email"
-          (click)="copyEmailContent()"
-          title="Copy personalized email content">
-          📧 Copy Email
-        </button>
-      </div>
-      <div class="email-content">
-        <pre>{{ getPersonalizedEmail() }}</pre>
-      </div>
-    </div>
-
-    <!-- Email Sending Section -->
-    <div class="email-sending-section" *ngIf="includeEmailField">
-      <div class="field-header">
-        <label class="field-label">Email Actions:</label>
-      </div>
-      
-      <div class="email-info" *ngIf="currentRecordHasEmail()">
-        <p class="recipient-info">
-          <strong>Recipient:</strong> {{ getCurrentRecordEmail() }}
+<!-- About Section -->
+<section id="about" class="about">
+  <div class="container">
+    <h2 class="section-title">About Me</h2>
+    <p class="section-subtitle">
+      Dedicated Java Full Stack Developer with expertise in enterprise applications
+    </p>
+    <div class="about-content">
+      <div class="about-text">
+        <p>
+          I'm a passionate Java Full Stack Developer with over 3 years of experience 
+          building enterprise-grade applications. I specialize in Spring Boot, Angular, 
+          and microservices architecture, creating scalable solutions that drive business growth.
         </p>
-        
-        <div class="email-actions">
-          <button 
-            class="btn btn-send-email"
-            (click)="sendEmailForCurrentRecord()"
-            [disabled]="isSendingEmail || getCurrentEmailStatus() === 'sending'"
-            title="Send personalized email to this recipient">
-            <span *ngIf="!isSendingEmail && getCurrentEmailStatus() !== 'sending'">
-              📧 Send Email
-            </span>
-            <span *ngIf="isSendingEmail || getCurrentEmailStatus() === 'sending'">
-              ⏳ Sending...
-            </span>
-          </button>
-          
-          <span class="email-status-text">
-            <span *ngIf="getCurrentEmailStatus() === 'sent'" class="text-success">
-              ✅ Email sent successfully!
-            </span>
-            <span *ngIf="getCurrentEmailStatus() === 'failed'" class="text-danger">
-              ❌ Failed to send email
-            </span>
-          </span>
+        <p>
+          My expertise spans across the entire development lifecycle, from requirement analysis 
+          to deployment and maintenance. I'm committed to writing clean, maintainable code 
+          and following best practices in software development.
+        </p>
+        <p>
+          When I'm not coding, you can find me exploring new technologies, contributing to 
+          open-source projects, or sharing knowledge through technical blogs and mentoring.
+        </p>
+        <div class="about-stats">
+          <div class="stat" *ngFor="let stat of stats">
+            <h3>{{ stat.value }}</h3>
+            <p>{{ stat.label }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="about-image">
+        <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=500&h=600&fit=crop&auto=format&q=80" alt="Developer workspace">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Skills Section -->
+<section id="skills" class="skills">
+  <div class="container">
+    <h2 class="section-title">Technical Skills</h2>
+    <p class="section-subtitle">
+      Proficient in modern technologies and frameworks for full-stack development
+    </p>
+    <div class="skills-grid">
+      <div class="skill-card" *ngFor="let skill of skills">
+        <div class="skill-icon">{{ skill.icon }}</div>
+        <h3>{{ skill.name }}</h3>
+        <div class="skill-bar">
+         <div class="skill-progress" [style.width.%]="skill.progress"></div>
+        </div>
+        <span class="skill-level">{{ skill.progress }}%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Projects Section -->
+<section id="projects" class="projects">
+  <div class="container">
+    <h2 class="section-title">Featured Projects</h2>
+    <p class="section-subtitle">
+      Showcasing my expertise in full-stack development and modern architectures
+    </p>
+    <div class="projects-grid">
+      <div class="project-card" *ngFor="let project of projects">
+        <div class="project-image">
+          <img [src]="project.image" [alt]="project.title">
+          <div class="project-overlay">
+            <a [href]="project.github" class="project-link">
+              <i class="fab fa-github"></i> GitHub
+            </a>
+            <a [href]="project.demo" class="project-link">
+              <i class="fas fa-external-link-alt"></i> Live Demo
+            </a>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3>{{ project.title }}</h3>
+          <p>{{ project.description }}</p>
+          <div class="project-tech">
+            <span class="tech-tag" *ngFor="let tech of project.technologies">{{ tech }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact">
+  <div class="container">
+    <h2 class="section-title">Get In Touch</h2>
+    <p class="section-subtitle">
+      Let's discuss your next project and bring your ideas to life
+    </p>
+    <div class="contact-content">
+      <div class="contact-info">
+        <h3>Let's work together</h3>
+        <p>
+          I'm always interested in new opportunities and exciting projects. 
+          Whether you need a full-stack developer for your team or want to discuss 
+          a custom solution, I'd love to hear from you!
+        </p>
+        <div class="contact-details">
+          <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <span>{{ contactInfo.email }}</span>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-phone"></i>
+            <span>{{ contactInfo.phone }}</span>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>{{ contactInfo.location }}</span>
+          </div>
+        </div>
+        <div class="social-links">
+          <a [href]="link.url" class="social-link" *ngFor="let link of socialLinks">
+            <i [class]="link.icon"></i>
+          </a>
         </div>
       </div>
       
-      <div class="no-email-warning" *ngIf="!currentRecordHasEmail()">
-        <p class="warning-text">
-          ⚠️ No valid email address found for this record
-        </p>
-      </div>
+      <form class="contact-form" [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            formControlName="name"
+            [class.error]="isFieldInvalid('name')"
+            placeholder="Enter your full name">
+          <div class="error-message" *ngIf="isFieldInvalid('name')">
+            {{ getFieldError('name') }}
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email"
+            [class.error]="isFieldInvalid('email')"
+            placeholder="Enter your email address">
+          <div class="error-message" *ngIf="isFieldInvalid('email')">
+            {{ getFieldError('email') }}
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <input 
+            type="text" 
+            id="subject" 
+            formControlName="subject"
+            [class.error]="isFieldInvalid('subject')"
+            placeholder="Enter the subject">
+          <div class="error-message" *ngIf="isFieldInvalid('subject')">
+            {{ getFieldError('subject') }}
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea 
+            id="message" 
+            formControlName="message"
+            [class.error]="isFieldInvalid('message')"
+            rows="5" 
+            placeholder="Enter your message"></textarea>
+          <div class="error-message" *ngIf="isFieldInvalid('message')">
+            {{ getFieldError('message') }}
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" [disabled]="contactForm.invalid">
+          <i class="fas fa-paper-plane"></i> Send Message
+        </button>
+      </form>
     </div>
-
-    <div class="no-email-mapping" *ngIf="!includeEmailField">
-      <p class="info-text">
-        💡 Email field is not mapped. Go back to mapping step to enable email sending.
-      </p>
-    </div>
   </div>
-  
-  <div class="navigation-controls">
-    <button 
-      class="btn btn-secondary" 
-      (click)="previousRecord()"
-      [disabled]="currentDataIndex === 0">
-      ← Previous
-    </button>
-    
-    <span class="page-indicator">
-      {{ currentDataIndex + 1 }} / {{ mappedData.length }}
-    </span>
-    
-    <button 
-      class="btn btn-secondary" 
-      (click)="nextRecord()"
-      [disabled]="currentDataIndex >= mappedData.length - 1">
-      Next →
-    </button>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>&copy; 2025 Tapas Ranjan. All rights reserved.</p>
   </div>
-  
-  <div class="button-group">
-    <button class="btn btn-secondary" (click)="goBack()">Back to Table View</button>
-    
-    <!-- Bulk Email Button -->
-    <button 
-      *ngIf="includeEmailField"
-      class="btn btn-bulk-send"
-      (click)="sendBulkEmails()"
-      [disabled]="isSendingEmail"
-      title="Send emails to all recipients with valid email addresses">
-      <span *ngIf="!isSendingEmail">📧 Send Bulk Emails</span>
-      <span *ngIf="isSendingEmail">⏳ Sending Emails...</span>
-    </button>
-    
-    <button class="btn btn-primary" (click)="reset()">Start Over</button>
-  </div>
-</div>
+</footer>
 
-
-<style>
-.column-tag:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.selected-columns-info {
-  margin: 15px 0;
-  padding: 10px;
-  background-color: #e7f3ff;
-  border: 1px solid #b8daff;
-  border-radius: 10px;
-}
-
-.selected-columns-list {
-  margin-top: 8px;
-}
-
-.selected-column-item {
-  display: inline-block;
-  margin: 2px 4px;
-  padding: 4px 8px;
-  background-color: #007bff;
-  color: white;
-  border-radius: 12px;
-  font-size: 12px;
-}
-
-.info-message {
-  background-color: #d1ecf1;
-  border: 1px solid #bee5eb;
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 15px;
-}
-
-.mandatory-note {
-  color: #495057;
-  font-style: italic;
-  margin-top: 10px;
-}
-
-.required-asterisk {
-  color: #dc3545;
-  font-weight: bold;
-}
-/* Additional Email Field Styles */
-.additional-fields-section {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-}
-
-.additional-field-item {
-  margin-bottom: 10px;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.checkbox-label input[type="checkbox"] {
-  margin-right: 8px;
-  transform: scale(1.2);
-}
-
-.optional-indicator {
-  color: #6c757d;
-  font-size: 0.9em;
-  font-style: italic;
-}
-</style>
+<!-- Scroll to Top Button -->
+<button class="scroll-top" #scrollTop (click)="scrollToTop()">
+  <i class="fas fa-arrow-up"></i>
+</button>
