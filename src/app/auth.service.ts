@@ -9,7 +9,7 @@ import { catchError } from 'rxjs/operators';
 export class AuthService {
   
   // Fixed URL - removed '/email' part
-  private apiUrl = 'http://13.48.50.246:8080/api/email';
+  private apiUrl = 'https://api.tapasranjan-sahoo.online/api/email';
   
   constructor(private http: HttpClient) { }
 
