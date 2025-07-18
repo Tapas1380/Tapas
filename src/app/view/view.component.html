@@ -197,7 +197,9 @@
     </div>
   </div>
 </section> -->
-<section id="projects" class="projects">
+
+
+<!-- <section id="projects" class="projects">
   <div class="container">
     <h2 class="section-title">Featured Projects</h2>
     <p class="section-subtitle">
@@ -231,7 +233,46 @@
       </div>
     </div>
   </div>
+</section> -->
+
+
+<section id="projects" class="projects">
+  <div class="container">
+    <h2 class="section-title">Featured Projects</h2>
+    <p class="section-subtitle">
+      Showcasing my expertise in full-stack development and modern architectures
+    </p>
+    <div class="projects-grid">
+      <div class="project-card" *ngFor="let project of projects">
+        <div class="cup-rim">
+          <div class="project-title">{{ project.title }}</div>
+        </div>
+        <div class="cup-body">
+          <div class="project-image">
+            <img [src]="project.image" [alt]="project.title">
+            <div class="project-overlay">
+              <a [href]="project.github" class="project-link" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+              <a [href]="project.demo" class="project-link" target="_blank">
+                <i class="fas fa-external-link-alt"></i> Live Demo
+              </a>
+            </div>
+          </div>
+          <div class="project-info">
+            <p>{{ project.description }}</p>
+            <div class="project-tech">
+              <span class="tech-tag" *ngFor="let tech of project.technologies">{{ tech }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="cup-handle"></div>
+        <div class="cup-saucer"></div>
+      </div>
+    </div>
+  </div>
 </section>
+
 
 <!-- Contact Section -->
 <section id="contact" class="contact">
