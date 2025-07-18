@@ -9,7 +9,7 @@ import { catchError } from 'rxjs/operators';
 export class AuthService {
   
   // Fixed URL - removed '/email' part
-  private apiUrl = 'http://localhost:8080/api/email';
+  private apiUrl = 'https://excel-bulk-mail-backend.onrender.com/api/email';
   
   constructor(private http: HttpClient) { }
 
