@@ -22,10 +22,15 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+   /* cursor: default; 
+     user-select: none; */
+     
 }
+
 
 html {
   scroll-behavior: smooth;
+  
 }
 
 body {
@@ -41,23 +46,19 @@ body {
   margin: 0 auto;
   padding: 0 20px;
 }
-
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 0px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: 4px;
+  background: transparent;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--secondary-color);
-}
 
 
 section {
@@ -262,6 +263,7 @@ section {
   display: flex;
   list-style: none;
   gap: 2.5rem;
+ 
 }
 
 .nav-link {
@@ -332,11 +334,19 @@ section {
     display: flex;
   }
 }
+.nav-link.active {
+  color: var(--primary-color);
+  
+  &::after {
+    width: 100%;
+  }
+}
 
 /* // =====================================================
 // HERO COMPONENT STYLES
 // src/app/components/hero/hero.component.scss
 // ===================================================== */
+
 
 .hero {
   min-height: 100vh;
@@ -345,8 +355,8 @@ section {
   background: var(--bg-primary);
   position: relative;
   overflow: hidden;
-  padding: 120px 20px 50px;
-
+  padding: 120px 100px 50px;
+  
   &::before {
     content: '';
     position: absolute;
@@ -382,7 +392,7 @@ section {
   line-height: 1.1;
   opacity: 0;
   animation: fadeInUp 0.8s ease 0.2s forwards;
-
+  
   .highlight {
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
@@ -400,6 +410,68 @@ section {
   animation: fadeInUp 0.8s ease 0.4s forwards;
 }
 
+.animated-java {
+  position: relative;
+  color: var(--primary-color);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  /* Remove anchor tag styles */
+  a {
+    color: inherit;
+    text-decoration: none;
+    
+    &:hover {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    transition: width 0.3s ease;
+  }
+  
+  &:hover {
+    color: var(--secondary-color);
+    transform: scale(1.05);
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+    
+    &::before {
+      width: 100%;
+    }
+    
+    &::after {
+      content: '☕';
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5rem;
+      animation: bounce 0.6s ease;
+    }
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  40% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+  60% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
 .hero-description {
   font-size: 1.2rem;
   margin-bottom: 2.5rem;
@@ -415,7 +487,20 @@ section {
   flex-wrap: wrap;
   opacity: 0;
   animation: fadeInUp 0.8s ease 0.8s forwards;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
+
+.whatsapp-btn {
+  flex-basis: 100%;
+  max-width: 200px;
+  align-self: center;
+  margin-top: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Remove WhatsApp specific styling - now uses btn-secondary */
 
 .hero-image {
   flex: 1;
@@ -424,6 +509,195 @@ section {
   align-items: center;
   z-index: 2;
   position: relative;
+}
+
+.skill-orbs {
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.skill-orb {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  
+  i {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.4);
+    filter: grayscale(1);
+    transition: all 0.3s ease;
+  }
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 107, 53, 0.2);
+    
+    i {
+      color: rgba(255, 107, 53, 0.6);
+    }
+  }
+}
+
+/* Positioning for each skill orb with safe distance from center */
+.skill-orb:nth-child(1) { /* Java - Top Left */
+  top: 5%;
+  left: 15%;
+  animation: slowRotate 25s linear infinite;
+}
+
+.skill-orb:nth-child(2) { /* Spring Boot - Top Right */
+  top: 8%;
+  right: 20%;
+  animation: slowFloat 30s ease-in-out infinite;
+}
+
+.skill-orb:nth-child(3) { /* Angular - Right */
+  right: 8%;
+  top: 35%;
+  animation: slowRotate 35s linear infinite reverse;
+}
+
+.skill-orb:nth-child(4) { /* React - Bottom Right */
+  right: 18%;
+  bottom: 12%;
+  animation: slowFloat 28s ease-in-out infinite;
+  animation-delay: -10s;
+}
+
+.skill-orb:nth-child(5) { /* MySQL - Bottom */
+  bottom: 5%;
+  left: 30%;
+  animation: slowRotate 40s linear infinite;
+  animation-delay: -15s;
+}
+
+.skill-orb:nth-child(6) { /* Docker - Bottom Left */
+  left: 12%;
+  bottom: 15%;
+  animation: slowFloat 32s ease-in-out infinite;
+  animation-delay: -20s;
+}
+
+.skill-orb:nth-child(7) { /* Git - Left */
+  left: 8%;
+  top: 45%;
+  animation: slowRotate 38s linear infinite reverse;
+  animation-delay: -25s;
+}
+
+.skill-orb:nth-child(8) { /* AWS - Top */
+  top: 12%;
+  left: 45%;
+  animation: slowFloat 26s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+@keyframes slowRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slowFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+/* Remove old float animation */
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Subtle particles animation - slower speed */
+.floating-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 107, 53, 0.2);
+  border-radius: 50%;
+  animation: floatParticle 40s linear infinite;
+}
+
+.particle:nth-child(1) {
+  left: 15%;
+  animation-delay: 0s;
+  animation-duration: 45s;
+}
+
+.particle:nth-child(2) {
+  left: 35%;
+  animation-delay: -15s;
+  animation-duration: 50s;
+}
+
+.particle:nth-child(3) {
+  left: 55%;
+  animation-delay: -30s;
+  animation-duration: 42s;
+}
+
+.particle:nth-child(4) {
+  left: 75%;
+  animation-delay: -45s;
+  animation-duration: 48s;
+}
+
+.particle:nth-child(5) {
+  left: 85%;
+  animation-delay: -60s;
+  animation-duration: 46s;
+}
+
+@keyframes floatParticle {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-100px) rotate(180deg);
+    opacity: 0;
+  }
 }
 
 .avatar {
@@ -436,7 +710,8 @@ section {
   position: relative;
   opacity: 0;
   animation: fadeInScale 1s ease 0.5s forwards;
-
+  z-index: 10;
+  
   &::before {
     content: '';
     position: absolute;
@@ -449,7 +724,7 @@ section {
     z-index: -1;
     animation: rotate 3s linear infinite;
   }
-
+  
   img {
     width: 100%;
     height: 100%;
@@ -463,26 +738,88 @@ section {
     text-align: center;
     padding: 120px 20px 50px;
   }
-
+  
   .hero-content {
     margin-bottom: 3rem;
   }
-
+  
   .hero-title {
     font-size: 2.5rem;
   }
-
+  
   .hero-subtitle {
     font-size: 1.4rem;
   }
-
+  
   .hero-buttons {
     justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
-
+  
+  .hero-buttons .btn {
+    width: 100%;
+    max-width: 250px;
+  }
+  
   .avatar {
     width: 280px;
     height: 280px;
+  }
+  
+  .skill-orbs {
+    width: 500px;
+    height: 500px;
+  }
+  
+  .skill-orb {
+    width: 40px;
+    height: 40px;
+    
+    i {
+      font-size: 16px;
+    }
+  }
+  
+  /* Adjust positions for mobile to maintain distance */
+  .skill-orb:nth-child(1) { /* Java */
+    top: 8%;
+    left: 18%;
+  }
+  
+  .skill-orb:nth-child(2) { /* Spring Boot */
+    top: 12%;
+    right: 22%;
+  }
+  
+  .skill-orb:nth-child(3) { /* Angular */
+    right: 12%;
+    top: 38%;
+  }
+  
+  .skill-orb:nth-child(4) { /* React */
+    right: 20%;
+    bottom: 18%;
+  }
+  
+  .skill-orb:nth-child(5) { /* MySQL */
+    bottom: 8%;
+    left: 32%;
+  }
+  
+  .skill-orb:nth-child(6) { /* Docker */
+    left: 15%;
+    bottom: 20%;
+  }
+  
+  .skill-orb:nth-child(7) { /* Git */
+    left: 12%;
+    top: 48%;
+  }
+  
+  .skill-orb:nth-child(8) { /* AWS */
+    top: 15%;
+    left: 48%;
   }
 }
 
@@ -490,11 +827,19 @@ section {
   .hero-title {
     font-size: 2rem;
   }
-
+  
   .hero-subtitle {
     font-size: 1.2rem;
   }
+  
+  .hero-buttons {
+    gap: 1rem;
+  }
 }
+
+
+
+
 
 /* // =====================================================
 // ABOUT COMPONENT STYLES
@@ -665,7 +1010,7 @@ section {
 // PROJECTS COMPONENT STYLES
 // src/app/components/projects/projects.component.scss
 // ===================================================== */
-
+/* 
 .projects {
   background: var(--bg-secondary);
 }
@@ -781,7 +1126,257 @@ section {
   .project-card {
     margin: 0 10px;
   }
-}
+} */
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .projects {
+            background: var(--bg-secondary);
+            padding: 4rem 0;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .project-card {
+            position: relative;
+            height: 450px;
+            transition: all 0.3s ease;
+            
+            &:hover {
+                transform: translateY(-10px);
+                filter: drop-shadow(var(--shadow-primary));
+            }
+
+            &:hover .project-image img {
+                transform: scale(1.1);
+            }
+
+            &:hover .project-overlay {
+                opacity: 1;
+            }
+
+            &:hover .cup-rim {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 20px rgba(100, 255, 218, 0.4);
+            }
+
+            &:hover .cup-handle {
+                border-color: var(--secondary-color);
+                box-shadow: 0 0 15px rgba(187, 134, 252, 0.3);
+            }
+
+            &:hover .cup-body {
+                border-color: var(--primary-color);
+                box-shadow: inset 0 0 20px rgba(100, 255, 218, 0.1);
+            }
+        }
+
+        /* Coffee Cup Rim */
+        .cup-rim {
+            position: absolute;
+            top: 20px;
+            left: 12.5%;
+            width: 75%;
+            height: 40px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 20px 20px 0 0;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        /* Coffee Cup Body */
+        .cup-body {
+            position: absolute;
+            top: 55px;
+            left: 15%;
+            width: 70%;
+            height: 280px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 0 0 70px 70px;
+            border-top: none;
+            overflow: hidden;
+            z-index: 5;
+            transition: all 0.3s ease;
+        }
+
+        /* Coffee Cup Handle */
+        .cup-handle {
+            position: absolute;
+            right: 5%;
+            top: 100px;
+            width: 50px;
+            height: 80px;
+            border: 3px solid var(--border-color);
+            border-left: none;
+            border-radius: 0 25px 25px 0;
+            background: transparent;
+            z-index: 8;
+            transition: all 0.3s ease;
+        }
+
+        /* Coffee Cup Saucer */
+        .cup-saucer {
+            position: absolute;
+            bottom: 20px;
+            left: 5%;
+            width: 90%;
+            height: 15px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            opacity: 0.8;
+            z-index: 3;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover .cup-saucer {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+        }
+
+        .project-image {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            top: 0;
+            overflow: hidden;
+            border-radius: 0 0 68px 68px;
+            z-index: 6;
+        }
+
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            border-radius: 0 0 68px 68px;
+        }
+
+        .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(100, 255, 218, 0.9), rgba(187, 134, 252, 0.9));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 7;
+            border-radius: 0 0 68px 68px;
+        }
+
+        .project-link {
+            color: var(--bg-primary);
+            text-decoration: none;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .project-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .project-info {
+            position: absolute;
+            bottom: 40px;
+            left: 8%;
+            right: 8%;
+            padding: 1.5rem;
+            background: rgba(42, 42, 42, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            z-index: 9;
+        }
+
+        .project-info h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .project-info p {
+            color: var(--text-secondary);
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .tech-tag {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--bg-primary);
+            padding: 0.4rem 0.9rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-card {
+                margin: 0 10px;
+                height: 400px;
+            }
+
+            .cup-body {
+                height: 240px;
+            }
+
+            .project-image {
+                height: 140px;
+            }
+
+            .project-info {
+                padding: 1.2rem;
+            }
+
+            .project-link {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+        }
 
 /* // =====================================================
 // CONTACT COMPONENT STYLES
@@ -939,7 +1534,7 @@ section {
 // src/app/components/scroll-top/scroll-top.component.scss
 // ===================================================== */
 
-.scroll-top {
+/* .scroll-top {
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -965,7 +1560,122 @@ section {
   &.show {
     display: flex;
   }
-} 
+}  */
+
+/* Scroll to Top Button with Progress Circle */
+.scroll-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  
+  /* Create the progress circle */
+  background: conic-gradient(var(--primary-color) var(--progress, 0%), transparent 0%);
+  padding: 3px;
+  
+  &.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Inner circle with icon */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: var(--bg-primary);
+    border-radius: 50%;
+    z-index: -1;
+  }
+  
+  /* Icon styling */
+  i {
+    position: relative;
+    z-index: 1;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+  }
+}
+
+/* Alternative approach with SVG circle */
+.scroll-top-svg {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  cursor: pointer;
+  
+  &.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* SVG circle progress */
+  .progress-circle {
+    transform: rotate(-90deg);
+    transform-origin: center;
+    
+    .progress-path {
+      fill: none;
+      stroke: var(--primary-color);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 125.6; /* 2 * π * 20 (radius) */
+      stroke-dashoffset: 125.6;
+      transition: stroke-dashoffset 0.1s ease;
+    }
+  }
+  
+  /* Button background */
+  .button-bg {
+    fill: var(--bg-primary);
+    stroke: var(--border-color);
+    stroke-width: 1;
+  }
+  
+  /* Icon container */
+  .icon-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
 
 /* Added scrollbar hover effect */
 ::-webkit-scrollbar-thumb:hover {

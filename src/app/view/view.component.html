@@ -2,24 +2,27 @@
 <nav class="navbar" id="navbar" #navbar>
   <div class="nav-container">
     <div class="nav-logo">
-      <h2>Tapas</h2>
+      <h2><i class="fab fa-java"></i>Tapas</h2>
     </div>
     
     <ul class="nav-menu" id="nav-menu" #navMenu>
       <li class="nav-item">
-        <a class="nav-link" (click)="scrollToSection('home')">Home</a>
+        <a class="nav-link" [class.active]="activeSection === 'home'" (click)="scrollToSection('home')">Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" (click)="scrollToSection('about')">About</a>
+        <a class="nav-link" [class.active]="activeSection === 'about'" (click)="scrollToSection('about')">About</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" (click)="scrollToSection('skills')">Skills</a>
+        <a class="nav-link" [class.active]="activeSection === 'skills'" (click)="scrollToSection('skills')">Skills</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" (click)="scrollToSection('projects')">Projects</a>
+        <a class="nav-link" [class.active]="activeSection === 'projects'" (click)="scrollToSection('projects')">Projects</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" (click)="scrollToSection('contact')">Contact</a>
+        <a class="nav-link" [class.active]="activeSection === 'contact'" (click)="scrollToSection('contact')">Contact</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeSection === 'contact'" (click)="scrollToSection('contact')"><i class="fas fa-leaf"></i></a>
       </li>
     </ul>
     
@@ -38,7 +41,9 @@
     <h1 class="hero-title">
       <span class="highlight">Tapas Ranjan</span>
     </h1>
-    <h2 class="hero-subtitle">Java Full Stack Developer</h2>
+    <h2 class="hero-subtitle">
+      <span class="animated-java"><a href="https://www.java.com/en/" target="_blank">Java</a></span> Full Stack Developer
+    </h2>
     <p class="hero-description">
       I build scalable web applications with Spring Boot, Angular, and modern technologies.
       Passionate about creating efficient, maintainable code and exceptional user experiences.
@@ -50,15 +55,58 @@
       <a (click)="downloadResume()" class="btn btn-secondary">
         <i class="fas fa-download"></i> Download Resume
       </a>
+      <a (click)="openWhatsApp()" class="btn btn-primary">
+        <i class="fab fa-whatsapp"></i> WhatsApp Me
+      </a>
     </div>
   </div>
-  <div class="hero-image">
+ 
+   <div class="hero-image">
+    <!-- Floating particles background -->
+    <div class="floating-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+    
+    <!-- Animated skill orbs -->
+    <div class="skill-orbs">
+      <div class="skill-orb">
+        <i class="fab fa-java"></i>
+      </div>
+       <!-- 
+      <div class="skill-orb">
+        <i class="fas fa-leaf"></i>
+      </div>
+     
+      <div class="skill-orb">
+        <i class="fab fa-angular"></i>
+      </div>
+      <div class="skill-orb">
+        <i class="fab fa-react"></i>
+      </div>
+      <div class="skill-orb">
+        <i class="fas fa-database"></i> 
+      </div>
+      <div class="skill-orb">
+        <i class="fab fa-docker"></i>
+      </div>
+      <div class="skill-orb">
+        <i class="fab fa-git-alt"></i>
+      </div>
+      <div class="skill-orb">
+        <i class="fab fa-aws"></i>
+      </div> -->
+    </div>
+    
+    <!-- Profile avatar -->
     <div class="avatar">
       <img src="assets/Tapas-ranjan-sahoo-1-1-full-rounded.png" alt="Profile Picture">
     </div>
   </div>
 </section>
-
 <!-- About Section -->
 <section id="about" class="about">
   <div class="container">
@@ -96,7 +144,6 @@
   </div>
 </section>
 
-<!-- Skills Section -->
 <section id="skills" class="skills">
   <div class="container">
     <h2 class="section-title">Technical Skills</h2>
@@ -104,20 +151,23 @@
       Proficient in modern technologies and frameworks for full-stack development
     </p>
     <div class="skills-grid">
-      <div class="skill-card" *ngFor="let skill of skills">
+      <div class="skill-card" *ngFor="let skill of skills; let i = index">
         <div class="skill-icon">{{ skill.icon }}</div>
         <h3>{{ skill.name }}</h3>
         <div class="skill-bar">
-         <div class="skill-progress" [style.width.%]="skill.progress"></div>
+          <div class="skill-progress" 
+               [attr.data-percentage]="skill.progress"
+               [style.--target-width]="skill.progress + '%'">
+          </div>
         </div>
-        <span class="skill-level">{{ skill.progress }}%</span>
+        <span class="skill-level">0%</span>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Projects Section -->
-<section id="projects" class="projects">
+<!-- <section id="projects" class="projects">
   <div class="container">
     <h2 class="section-title">Featured Projects</h2>
     <p class="section-subtitle">
@@ -143,6 +193,41 @@
             <span class="tech-tag" *ngFor="let tech of project.technologies">{{ tech }}</span>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+<section id="projects" class="projects">
+  <div class="container">
+    <h2 class="section-title">Featured Projects</h2>
+    <p class="section-subtitle">
+      Showcasing my expertise in full-stack development and modern architectures
+    </p>
+    <div class="projects-grid">
+      <div class="project-card" *ngFor="let project of projects">
+        <div class="cup-rim"></div>
+        <div class="cup-body">
+          <div class="project-image">
+            <img [src]="project.image" [alt]="project.title">
+            <div class="project-overlay">
+              <a [href]="project.github" class="project-link">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+              <a [href]="project.demo" class="project-link">
+                <i class="fas fa-external-link-alt"></i> Live Demo
+              </a>
+            </div>
+          </div>
+          <div class="project-info">
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.description }}</p>
+            <div class="project-tech">
+              <span class="tech-tag" *ngFor="let tech of project.technologies">{{ tech }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="cup-handle"></div>
+        <div class="cup-saucer"></div>
       </div>
     </div>
   </div>
@@ -253,6 +338,15 @@
 </footer>
 
 <!-- Scroll to Top Button -->
-<button class="scroll-top" #scrollTop (click)="scrollToTop()">
+<!-- <button class="scroll-top" #scrollTop (click)="scrollToTop()">
   <i class="fas fa-arrow-up"></i>
-</button>
+</button> -->
+<div class="scroll-top-svg" #scrollTop (click)="scrollToTop()">
+  <svg width="50" height="50" class="progress-circle">
+    <circle class="button-bg" cx="25" cy="25" r="22"></circle>
+    <circle class="progress-path" cx="25" cy="25" r="20" #progressPath></circle>
+  </svg>
+  <div class="icon-container">
+    <i class="fab fa-java"></i>
+  </div>
+</div>

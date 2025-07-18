@@ -3,7 +3,7 @@
 import * as XLSX from 'xlsx';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, NgZone } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 
@@ -18,10 +18,10 @@ export class ViewComponent implements OnInit, OnDestroy {
  @ViewChild('navbar', { static: true }) navbar!: ElementRef;
   @ViewChild('scrollTop', { static: true }) scrollTop!: ElementRef;
   @ViewChild('navMenu', { static: true }) navMenu!: ElementRef;
-
+@ViewChild('progressPath', { static: true }) progressPath!: ElementRef;
   contactForm: FormGroup;
   isSubmitting = false;
-  
+  private sectionObserver!: IntersectionObserver;
   // Portfolio data
   skills = [
     { icon: '☕', name: 'Java & Spring Boot', progress: 92 },
@@ -55,7 +55,7 @@ export class ViewComponent implements OnInit, OnDestroy {
       image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop&auto=format&q=80',
       technologies: ['Spring Boot', 'Angular', 'Chart.js', 'MongoDB'],
       github: '#',
-      demo: '#'
+      demo: 'https://excel-bulk-mail.onrender.com/#/login'
     },
     {
       title: 'Digital Banking System',
@@ -90,7 +90,7 @@ export class ViewComponent implements OnInit, OnDestroy {
   ];
 
   contactInfo = {
-    email: 'tapasranjanhr@gmail.com',
+    email: 'tapasranjan.sahoo@qwegle.com',
     phone: '+91 8290684273',
     location: 'Bhubaneswar, Odisha, India'
   };
@@ -98,7 +98,7 @@ export class ViewComponent implements OnInit, OnDestroy {
   socialLinks = [
     { icon: 'fab fa-linkedin', url: 'https://www.linkedin.com/in/tapas-ranjan-sahoo-0365ba178/' },
     { icon: 'fab fa-github', url: 'https://github.com/dashboard' },
-    { icon: 'fab fa-facebook', url: '#' },
+    { icon: 'fab fa-facebook', url: 'https://www.facebook.com/tapasranjansahoo1380' },
     { icon: 'fab fa-instagram', url: 'https://www.instagram.com/mr__tps/' }
   ];
 
@@ -106,8 +106,10 @@ export class ViewComponent implements OnInit, OnDestroy {
   private observer!: IntersectionObserver;
  
   constructor( private fb: FormBuilder,
-    private authService: AuthService, 
-    private router: Router) {
+    private authService: AuthService,
+  private router: Router,
+  private ngZone: NgZone 
+   ) {
     this.contactForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
@@ -129,18 +131,22 @@ downloadResume(): void {
     this.initializeScrollEffects();
     this.initializeIntersectionObserver();
     // this.initializeSkillAnimation();
+    this.initializeActiveSection();
     this.animateSkillBars();
   
   }
 
-  ngOnDestroy(): void {
-    if (this.scrollListener) {
-      window.removeEventListener('scroll', this.scrollListener);
-    }
-    if (this.observer) {
-      this.observer.disconnect();
-    }
+ ngOnDestroy(): void {
+  if (this.scrollListener) {
+    window.removeEventListener('scroll', this.scrollListener);
   }
+  if (this.observer) {
+    this.observer.disconnect();
+  }
+  if (this.sectionObserver) {
+    this.sectionObserver.disconnect();
+  }
+}
 
   private initializeScrollEffects(): void {
     this.scrollListener = () => {
@@ -197,14 +203,29 @@ private initializeSkillAnimation(): void {
     }
   }
 
-  private handleScrollToTopButton(): void {
-    const scrollTopBtn = this.scrollTop.nativeElement;
-    if (window.scrollY > 300) {
-      scrollTopBtn.classList.add('show');
-    } else {
-      scrollTopBtn.classList.remove('show');
-    }
+ private handleScrollToTopButton(): void {
+  const scrollTopBtn = this.scrollTop.nativeElement;
+  const progressPath = this.progressPath?.nativeElement;
+  
+  // Calculate scroll progress
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrollPercent = (scrollTop / docHeight) * 100;
+  
+  // Show/hide button
+  if (window.scrollY > 300) {
+    scrollTopBtn.classList.add('show');
+  } else {
+    scrollTopBtn.classList.remove('show');
   }
+  
+  // Update progress circle
+  if (progressPath) {
+    const circumference = 2 * Math.PI * 20; // radius = 20
+    const offset = circumference - (scrollPercent / 100) * circumference;
+    progressPath.style.strokeDashoffset = offset;
+  }
+}
 
   private initializeIntersectionObserver(): void {
     const observerOptions = {
@@ -234,46 +255,138 @@ private initializeSkillAnimation(): void {
     }, 100);
   }
 
-  private animateSkillBars(): void {
-    const animateSkills = () => {
-      const skillBars = document.querySelectorAll('.skill-progress');
-      skillBars.forEach(bar => {
-        const barTop = bar.getBoundingClientRect().top;
-        const barBottom = bar.getBoundingClientRect().bottom;
-        const isVisible = barTop < window.innerHeight && barBottom > 0;
-        
-        if (isVisible) {
-          const element = bar as HTMLElement;
-          const width = element.style.width;
-          element.style.width = '0%';
-          setTimeout(() => {
-            element.style.width = width;
-          }, 200);
-        }
-      });
-    };
+ private animateSkillBars(): void {
+  const skillsSection = document.getElementById('skills');
+  if (!skillsSection) return;
 
-    window.addEventListener('scroll', animateSkills);
-  }
+  let hasAnimated = false; // Prevent multiple animations
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !hasAnimated) {
+        hasAnimated = true;
+        this.startSkillAnimation();
+        observer.unobserve(entry.target); // Stop observing after animation
+      }
+    });
+  }, {
+    threshold: 0.3, // Trigger when 30% of skills section is visible
+    rootMargin: '0px 0px -100px 0px' // Offset for better timing
+  });
+
+  observer.observe(skillsSection);
+}
+
+private startSkillAnimation(): void {
+  const skillCards = document.querySelectorAll('.skill-card');
+  
+  skillCards.forEach((card, index) => {
+    const progressBar = card.querySelector('.skill-progress') as HTMLElement;
+    const skillLevel = card.querySelector('.skill-level') as HTMLElement;
+    
+    if (progressBar && skillLevel) {
+      // Get the target percentage from your skills array
+      const targetPercentage = this.skills[index]?.progress || 0;
+      
+      // Set CSS custom property for animation
+      progressBar.style.setProperty('--target-width', `${targetPercentage}%`);
+      
+      // Reset the bar to 0% first
+      progressBar.style.width = '0%';
+      progressBar.style.transition = 'none';
+      
+      // Force reflow
+      void progressBar.offsetWidth;
+      
+      // Start animation with delay for staggered effect
+      setTimeout(() => {
+        progressBar.style.transition = `width 1.5s ease-out`;
+        progressBar.style.width = `${targetPercentage}%`;
+        
+        // Animate the percentage number
+        this.animatePercentageNumber(skillLevel, targetPercentage);
+      }, index * 200); // 200ms delay between each bar
+    }
+  });
+}
+
+private animatePercentageNumber(element: HTMLElement, targetPercentage: number): void {
+  let currentPercentage = 0;
+  const increment = targetPercentage / 100; // Divide by 100 for smooth animation
+  const duration = 1500; // 1.5 seconds
+  const stepTime = duration / 100;
+
+  const timer = setInterval(() => {
+    currentPercentage += increment;
+    if (currentPercentage >= targetPercentage) {
+      currentPercentage = targetPercentage;
+      clearInterval(timer);
+    }
+    element.textContent = `${Math.round(currentPercentage)}%`;
+  }, stepTime);
+}
 
   toggleMobileMenu(): void {
     const navMenu = this.navMenu.nativeElement;
     navMenu.classList.toggle('active');
   }
 
-  scrollToSection(sectionId: string): void {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    // Close mobile menu if open
-    const navMenu = this.navMenu.nativeElement;
-    navMenu.classList.remove('active');
-  }
 
+scrollToSection(sectionId: string): void {
+  this.activeSection = sectionId; // Add this line
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  // Close mobile menu if open
+  const navMenu = this.navMenu.nativeElement;
+  navMenu.classList.remove('active');
+}
   scrollToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+
+  activeSection = 'home';
+ private initializeActiveSection(): void {
+  const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+  
+  const sectionObserver = new IntersectionObserver((entries) => {
+    let maxRatio = 0;
+    let activeId = this.activeSection;
+    
+    entries.forEach(entry => {
+      if (entry.intersectionRatio > maxRatio) {
+        maxRatio = entry.intersectionRatio;
+        activeId = entry.target.id;
+      }
+    });
+    
+    if (maxRatio > 0.1) {
+      this.ngZone.run(() => {
+        this.activeSection = activeId;
+        console.log('Active section changed to:', activeId); // Debug log
+      });
+    }
+  }, {
+    threshold: [0, 0.1, 0.3, 0.5, 0.7, 1],
+    rootMargin: '-80px 0px -80px 0px'
+  });
+
+  // Wait for DOM to be ready and observe sections
+  setTimeout(() => {
+    sections.forEach(sectionId => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        console.log('Observing section:', sectionId); // Debug log
+        sectionObserver.observe(element);
+      } else {
+        console.warn('Section not found:', sectionId); // Debug log
+      }
+    });
+  }, 500);
+}
+
 
    onSubmit(): void {
   if (this.contactForm.valid) {
@@ -282,7 +395,7 @@ private initializeSkillAnimation(): void {
     console.log('Form submitted:', formData);
     
     // Use the improved method with error handling
-    this.authService.sendMessageWithErrorHandling(formData).subscribe({
+    this.authService.sendMessage(formData).subscribe({
       next: (response) => {
         console.log('Success:', response);
         this.showSuccessMessage();
@@ -337,4 +450,18 @@ private initializeSkillAnimation(): void {
     }
     return '';
   }
+
+openWhatsApp(): void {
+  // Your WhatsApp number (replace with your actual number)
+  const phoneNumber = '918290684273'; // Your number without + symbol
+  
+  // Pre-filled message
+  const message = encodeURIComponent('Hello Tapas! I am interested in your services and would like to discuss a project with you.');
+  
+  // WhatsApp URL
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+  
+  // Open WhatsApp in a new window/tab
+  window.open(whatsappUrl, '_blank');
+}
 }
