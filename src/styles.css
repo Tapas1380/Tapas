@@ -1,7 +1,7 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
+  /* Dark Theme (Default) */
   --primary-color: #64ffda;
   --secondary-color: #bb86fc;
   --accent-color: #03dac6;
@@ -13,9 +13,27 @@
   --text-muted: #666666;
   --border-color: #333333;
   --shadow-primary: 0 8px 32px rgba(100, 255, 218, 0.1);
-  --shadow-secondary: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-secondary: 0 4px 16px rgba(0, 0, 0, 0.5);
   --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-card: linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 100%);
+  --gradient-card: linear-gradient(145deg, #252525 0%, #1e1e1e 100%);
+}
+
+body.bright-theme {
+  /* Bright Theme */
+  --primary-color: #007bff;
+  --secondary-color: #6f42c1;
+  --accent-color: #17a2b8;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-card: #ffffff;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  --border-color: #dee2e6;
+  --shadow-primary: 0 8px 32px rgba(0, 123, 255, 0.1);
+  --shadow-secondary: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --gradient-primary: linear-gradient(135deg, #007bff 0%, #6f42c1 100%);
+  --gradient-card: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
 }
 
 * {

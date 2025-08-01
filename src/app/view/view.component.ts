@@ -14,7 +14,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class ViewComponent implements OnInit, OnDestroy {
   title = 'Angular Portfolio';
-  
+
  @ViewChild('navbar', { static: true }) navbar!: ElementRef;
   @ViewChild('scrollTop', { static: true }) scrollTop!: ElementRef;
   @ViewChild('navMenu', { static: true }) navMenu!: ElementRef;
@@ -104,11 +104,11 @@ export class ViewComponent implements OnInit, OnDestroy {
 
   private scrollListener!: () => void;
   private observer!: IntersectionObserver;
- 
+
   constructor( private fb: FormBuilder,
     private authService: AuthService,
   private router: Router,
-  private ngZone: NgZone 
+  private ngZone: NgZone
    ) {
     this.contactForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -130,10 +130,11 @@ downloadResume(): void {
   ngOnInit(): void {
     this.initializeScrollEffects();
     this.initializeIntersectionObserver();
-    // this.initializeSkillAnimation();
     this.initializeActiveSection();
     this.animateSkillBars();
-  
+
+    // Set default theme to dark
+    document.body.classList.add('dark-theme');
   }
 
  ngOnDestroy(): void {
@@ -173,19 +174,19 @@ private initializeSkillAnimation(): void {
         skillBars.forEach((bar, index) => {
           const element = bar as HTMLElement;
           const targetWidth = element.getAttribute('data-width');
-          
+
           // Reset to 0% and then animate to target width
           element.style.transition = 'none';
           element.style.width = '0%';
-          
+
           // Force reflow
           void element.offsetWidth;
-          
+
           // Set transition and animate
           element.style.transition = `width 1.5s ease-out ${index * 0.1}s`;
           element.style.width = `${targetWidth}%`;
         });
-        
+
         // Stop observing after animation starts
         observer.unobserve(entry.target);
       }
@@ -206,19 +207,19 @@ private initializeSkillAnimation(): void {
  private handleScrollToTopButton(): void {
   const scrollTopBtn = this.scrollTop.nativeElement;
   const progressPath = this.progressPath?.nativeElement;
-  
+
   // Calculate scroll progress
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
   const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
   const scrollPercent = (scrollTop / docHeight) * 100;
-  
+
   // Show/hide button
   if (window.scrollY > 300) {
     scrollTopBtn.classList.add('show');
   } else {
     scrollTopBtn.classList.remove('show');
   }
-  
+
   // Update progress circle
   if (progressPath) {
     const circumference = 2 * Math.PI * 20; // radius = 20
@@ -279,30 +280,30 @@ private initializeSkillAnimation(): void {
 
 private startSkillAnimation(): void {
   const skillCards = document.querySelectorAll('.skill-card');
-  
+
   skillCards.forEach((card, index) => {
     const progressBar = card.querySelector('.skill-progress') as HTMLElement;
     const skillLevel = card.querySelector('.skill-level') as HTMLElement;
-    
+
     if (progressBar && skillLevel) {
       // Get the target percentage from your skills array
       const targetPercentage = this.skills[index]?.progress || 0;
-      
+
       // Set CSS custom property for animation
       progressBar.style.setProperty('--target-width', `${targetPercentage}%`);
-      
+
       // Reset the bar to 0% first
       progressBar.style.width = '0%';
       progressBar.style.transition = 'none';
-      
+
       // Force reflow
       void progressBar.offsetWidth;
-      
+
       // Start animation with delay for staggered effect
       setTimeout(() => {
         progressBar.style.transition = `width 1.5s ease-out`;
         progressBar.style.width = `${targetPercentage}%`;
-        
+
         // Animate the percentage number
         this.animatePercentageNumber(skillLevel, targetPercentage);
       }, index * 200); // 200ms delay between each bar
@@ -332,16 +333,28 @@ private animatePercentageNumber(element: HTMLElement, targetPercentage: number):
   }
 
 
-scrollToSection(sectionId: string): void {
-  this.activeSection = sectionId; // Add this line
-  const element = document.getElementById(sectionId);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  scrollToSection(sectionId: string): void {
+    this.activeSection = sectionId;
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Force bright theme on navigation
+      //this.setTheme(true);
+    }
+    // Close mobile menu if open
+    const navMenu = this.navMenu.nativeElement;
+    navMenu.classList.remove('active');
   }
-  // Close mobile menu if open
-  const navMenu = this.navMenu.nativeElement;
-  navMenu.classList.remove('active');
-}
+
+  setTheme(isBright: boolean): void {
+    document.body.classList.toggle('bright-theme', isBright);
+    document.body.classList.toggle('dark-theme', !isBright);
+  }
+
+  toggleTheme(): void {
+    const isCurrentlyBright = document.body.classList.contains('bright-theme');
+    this.setTheme(!isCurrentlyBright);
+  }
   scrollToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -350,18 +363,18 @@ scrollToSection(sectionId: string): void {
   activeSection = 'home';
  private initializeActiveSection(): void {
   const sections = ['home', 'about', 'skills', 'projects', 'contact'];
-  
+
   const sectionObserver = new IntersectionObserver((entries) => {
     let maxRatio = 0;
     let activeId = this.activeSection;
-    
+
     entries.forEach(entry => {
       if (entry.intersectionRatio > maxRatio) {
         maxRatio = entry.intersectionRatio;
         activeId = entry.target.id;
       }
     });
-    
+
     if (maxRatio > 0.1) {
       this.ngZone.run(() => {
         this.activeSection = activeId;
@@ -393,7 +406,7 @@ scrollToSection(sectionId: string): void {
     this.isSubmitting = true;
     const formData = this.contactForm.value;
     console.log('Form submitted:', formData);
-    
+
     // Use the improved method with error handling
     this.authService.sendMessage(formData).subscribe({
       next: (response) => {
@@ -454,13 +467,13 @@ scrollToSection(sectionId: string): void {
 openWhatsApp(): void {
   // Your WhatsApp number (replace with your actual number)
   const phoneNumber = '918290684273'; // Your number without + symbol
-  
+
   // Pre-filled message
   const message = encodeURIComponent('Hello Tapas! I am interested in your services and would like to discuss a project with you.');
-  
+
   // WhatsApp URL
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-  
+
   // Open WhatsApp in a new window/tab
   window.open(whatsappUrl, '_blank');
 }

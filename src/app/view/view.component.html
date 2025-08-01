@@ -4,7 +4,7 @@
     <div class="nav-logo">
       <h2><i class="fab fa-java"></i>Tapas</h2>
     </div>
-    
+
     <ul class="nav-menu" id="nav-menu" #navMenu>
       <li class="nav-item">
         <a class="nav-link" [class.active]="activeSection === 'home'" (click)="scrollToSection('home')">Home</a>
@@ -21,11 +21,12 @@
       <li class="nav-item">
         <a class="nav-link" [class.active]="activeSection === 'contact'" (click)="scrollToSection('contact')">Contact</a>
       </li>
+
       <li class="nav-item">
-        <a class="nav-link" [class.active]="activeSection === 'contact'" (click)="scrollToSection('contact')"><i class="fas fa-leaf"></i></a>
+        <a class="nav-link" (click)="toggleTheme()" title="Toggle Theme"><i class="fas fa-sun"></i></a>
       </li>
     </ul>
-    
+
     <div class="nav-toggle" (click)="toggleMobileMenu()">
       <span class="bar"></span>
       <span class="bar"></span>
@@ -60,7 +61,7 @@
       </a>
     </div>
   </div>
- 
+
    <div class="hero-image">
     <!-- Floating particles background -->
     <div class="floating-particles">
@@ -70,17 +71,17 @@
       <div class="particle"></div>
       <div class="particle"></div>
     </div>
-    
+
     <!-- Animated skill orbs -->
     <div class="skill-orbs">
       <div class="skill-orb">
         <i class="fab fa-java"></i>
       </div>
-       <!-- 
+       <!--
       <div class="skill-orb">
         <i class="fas fa-leaf"></i>
       </div>
-     
+
       <div class="skill-orb">
         <i class="fab fa-angular"></i>
       </div>
@@ -88,7 +89,7 @@
         <i class="fab fa-react"></i>
       </div>
       <div class="skill-orb">
-        <i class="fas fa-database"></i> 
+        <i class="fas fa-database"></i>
       </div>
       <div class="skill-orb">
         <i class="fab fa-docker"></i>
@@ -100,7 +101,7 @@
         <i class="fab fa-aws"></i>
       </div> -->
     </div>
-    
+
     <!-- Profile avatar -->
     <div class="avatar">
       <img src="assets/Tapas-ranjan-sahoo-1-1-full-rounded.png" alt="Profile Picture">
@@ -117,17 +118,17 @@
     <div class="about-content">
       <div class="about-text">
         <p>
-          I'm a passionate Java Full Stack Developer with over 3 years of experience 
-          building enterprise-grade applications. I specialize in Spring Boot, Angular, 
+          I'm a passionate Java Full Stack Developer with over 3 years of experience
+          building enterprise-grade applications. I specialize in Spring Boot, Angular,
           and microservices architecture, creating scalable solutions that drive business growth.
         </p>
         <p>
-          My expertise spans across the entire development lifecycle, from requirement analysis 
-          to deployment and maintenance. I'm committed to writing clean, maintainable code 
+          My expertise spans across the entire development lifecycle, from requirement analysis
+          to deployment and maintenance. I'm committed to writing clean, maintainable code
           and following best practices in software development.
         </p>
         <p>
-          When I'm not coding, you can find me exploring new technologies, contributing to 
+          When I'm not coding, you can find me exploring new technologies, contributing to
           open-source projects, or sharing knowledge through technical blogs and mentoring.
         </p>
         <div class="about-stats">
@@ -155,7 +156,7 @@
         <div class="skill-icon">{{ skill.icon }}</div>
         <h3>{{ skill.name }}</h3>
         <div class="skill-bar">
-          <div class="skill-progress" 
+          <div class="skill-progress"
                [attr.data-percentage]="skill.progress"
                [style.--target-width]="skill.progress + '%'">
           </div>
@@ -285,8 +286,8 @@
       <div class="contact-info">
         <h3>Let's work together</h3>
         <p>
-          I'm always interested in new opportunities and exciting projects. 
-          Whether you need a full-stack developer for your team or want to discuss 
+          I'm always interested in new opportunities and exciting projects.
+          Whether you need a full-stack developer for your team or want to discuss
           a custom solution, I'd love to hear from you!
         </p>
         <div class="contact-details">
@@ -309,13 +310,13 @@
           </a>
         </div>
       </div>
-      
+
       <form class="contact-form" [formGroup]="contactForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label for="name">Full Name</label>
-          <input 
-            type="text" 
-            id="name" 
+          <input
+            type="text"
+            id="name"
             formControlName="name"
             [class.error]="isFieldInvalid('name')"
             placeholder="Enter your full name">
@@ -323,12 +324,12 @@
             {{ getFieldError('name') }}
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="email">Email Address</label>
-          <input 
-            type="email" 
-            id="email" 
+          <input
+            type="email"
+            id="email"
             formControlName="email"
             [class.error]="isFieldInvalid('email')"
             placeholder="Enter your email address">
@@ -336,12 +337,12 @@
             {{ getFieldError('email') }}
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="subject">Subject</label>
-          <input 
-            type="text" 
-            id="subject" 
+          <input
+            type="text"
+            id="subject"
             formControlName="subject"
             [class.error]="isFieldInvalid('subject')"
             placeholder="Enter the subject">
@@ -349,20 +350,20 @@
             {{ getFieldError('subject') }}
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="message">Message</label>
-          <textarea 
-            id="message" 
+          <textarea
+            id="message"
             formControlName="message"
             [class.error]="isFieldInvalid('message')"
-            rows="5" 
+            rows="5"
             placeholder="Enter your message"></textarea>
           <div class="error-message" *ngIf="isFieldInvalid('message')">
             {{ getFieldError('message') }}
           </div>
         </div>
-        
+
         <button type="submit" class="btn btn-primary" [disabled]="contactForm.invalid">
           <i class="fas fa-paper-plane"></i> Send Message
         </button>
